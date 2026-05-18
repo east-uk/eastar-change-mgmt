@@ -54,6 +54,14 @@
           <textarea id="comment-text" class="textarea" maxlength="1500" placeholder="걱정·고민·궁금한 사항을 자유롭게 남겨주세요. 작성자는 식별되지 않습니다."></textarea>
           <div class="field__counter"><span id="counter">0</span> / 1500</div>
         </div>
+        <div class="field">
+          <label for="comment-password">삭제용 비밀번호 (선택)</label>
+          <input id="comment-password" class="input" type="password" maxlength="20"
+                 autocomplete="new-password" placeholder="4자 이상 — 추후 본인이 의견을 지울 때 사용">
+          <div class="field__counter text-mute" style="text-align: left;">
+            비워두면 본인 삭제 불가 (관리자만 삭제 가능). 비밀번호는 안전하게 해시 저장되며 복구되지 않습니다.
+          </div>
+        </div>
         <div class="row row--between">
           <span class="text-small text-mute">의견은 익명으로 저장되며 본부 정보만 통계에 사용됩니다.</span>
           <button id="submit-btn" class="btn btn--primary">의견 등록</button>
@@ -151,6 +159,35 @@
     <div id="comments-list" class="stack stack--tight"></div>
   </section>
 </main>
+
+<!-- 의견 삭제 확인 모달 -->
+<div id="delete-modal" class="modal-bg hidden">
+  <div class="modal" style="max-width: 420px;">
+    <div class="modal__head">
+      <h3 class="modal__title">의견 삭제</h3>
+      <button class="icon-btn" data-close-delete>✕</button>
+    </div>
+    <div class="modal__body">
+      <p class="text-mute text-small" style="margin: 0 0 var(--sp-4);">
+        작성 시 설정하신 비밀번호를 입력해주세요. 삭제된 의견은 복구되지 않습니다.
+      </p>
+      <div class="stack">
+        <div class="field">
+          <label for="delete-pw-input">비밀번호</label>
+          <input id="delete-pw-input" class="input" type="password" maxlength="20" autocomplete="off">
+        </div>
+        <div id="delete-err" class="alert alert--danger hidden">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m12 3 10 17H2z"/><path d="M12 10v4M12 17v.01"/></svg>
+          <div id="delete-err-msg"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal__foot">
+      <button class="btn btn--tertiary" data-close-delete>취소</button>
+      <button id="delete-confirm" class="btn btn--primary">삭제</button>
+    </div>
+  </div>
+</div>
 
 <footer class="footer">
   <div class="wrap footer__inner">

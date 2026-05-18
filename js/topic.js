@@ -1,12 +1,12 @@
 // topic.html — 주제 상세
 import {
-  db, auth, collection, doc, getDoc, addDoc, query, orderBy, onSnapshot,
+  db, auth, collection, doc, getDoc, addDoc, deleteDoc, query, orderBy, onSnapshot,
   serverTimestamp, updateDoc, onAuthStateChanged
 } from "./firebase-init.js";
 import {
   DEFAULT_DEPARTMENTS, deptColorOf, colorHexOf, DEPT_COLOR_HEX,
   ddayLabel, ddayBadgeClass, fmtDate, fmtDateTime, fmtRelative,
-  isExpired, esc, qs, deptChipHTML, dailyBrowserHash, toast
+  isExpired, esc, qs, deptChipHTML, dailyBrowserHash, toast, sha256
 } from "./utils.js";
 import { countKeywords, topKeywords, toWordCloudList } from "./keywords.js";
 
@@ -20,6 +20,7 @@ let stopwordsExtra = [];
 let allComments = [];
 let charts = { bar: null, donut: null, line: null };
 let isAdmin = false;
+let pendingDeleteId = null;
 
 if (!topicId) {
   document.getElementById("topic-loading").innerHTML = `
@@ -79,20 +80,24 @@ function renderHeader(t) {
 async function submitComment() {
   const dept = $("#dept-select").value;
   const content = $("#comment-text").value.trim();
+  const rawPw = $("#comment-password").value;
   const msgEl = $("#submit-msg");
 
   if (!dept) { toast(msgEl, "danger", "<b>본부를 선택해주세요</b>익명 통계 분석을 위해 본부 정보가 필요합니다."); return; }
   if (!content) { toast(msgEl, "danger", "<b>의견 내용을 입력해주세요</b>"); return; }
   if (content.length > 1500) { toast(msgEl, "danger", "<b>1,500자를 초과했습니다</b>"); return; }
+  if (rawPw && rawPw.length < 4) { toast(msgEl, "danger", "<b>비밀번호는 4자 이상</b>설정하지 않으려면 비워두세요."); return; }
 
   $("#submit-btn").disabled = true;
   $("#submit-btn").textContent = "등록 중…";
 
   try {
     const ipHash = await dailyBrowserHash();
-    await addDoc(collection(db, "topics", topicId, "comments"), {
+    const payload = {
       content, department: dept, createdAt: serverTimestamp(), ipHash
-    });
+    };
+    if (rawPw) payload.passwordHash = await sha256(rawPw);
+    await addDoc(collection(db, "topics", topicId, "comments"), payload);
     // commentCount 증가 (간단 카운터, 정확하진 않지만 v1엔 충분)
     try {
       await updateDoc(doc(db, "topics", topicId), {
@@ -101,6 +106,7 @@ async function submitComment() {
     } catch (e) { /* ignore */ }
 
     $("#comment-text").value = "";
+    $("#comment-password").value = "";
     $("#counter").textContent = "0";
     toast(msgEl, "success", "<b>의견이 등록되었습니다</b>참여해 주셔서 감사합니다.");
   } catch (e) {
@@ -125,15 +131,95 @@ function renderCommentList() {
     `;
     return;
   }
-  listEl.innerHTML = list.map(c => `
+  listEl.innerHTML = list.map(c => {
+    const canAuthorDelete = !!c.passwordHash;
+    let delBtn = "";
+    if (isAdmin) {
+      delBtn = `<button class="comment__del" data-id="${c.id}" data-mode="admin" title="관리자 삭제">관리자 삭제</button>`;
+    } else if (canAuthorDelete) {
+      delBtn = `<button class="comment__del" data-id="${c.id}" data-mode="author" title="비밀번호로 삭제">삭제</button>`;
+    }
+    return `
     <div class="comment">
       <div class="comment__head">
-        ${deptChipHTML(c.department, departments)}
-        <span class="comment__time">${esc(fmtRelative(c.createdAt))}</span>
+        <div class="row" style="gap: var(--sp-2);">
+          ${deptChipHTML(c.department, departments)}
+          <span class="comment__time">${esc(fmtRelative(c.createdAt))}</span>
+        </div>
+        ${delBtn}
       </div>
       <div class="comment__body">${esc(c.content)}</div>
     </div>
-  `).join("");
+  `;
+  }).join("");
+
+  // 삭제 버튼 바인딩
+  listEl.querySelectorAll(".comment__del").forEach(btn => {
+    btn.addEventListener("click", () => handleDeleteClick(btn.dataset.id, btn.dataset.mode));
+  });
+}
+
+// ─────────────────────────────────────────────
+// 댓글 삭제
+// ─────────────────────────────────────────────
+async function handleDeleteClick(commentId, mode) {
+  const c = allComments.find(x => x.id === commentId);
+  if (!c) return;
+
+  if (mode === "admin") {
+    if (!confirm("관리자 권한으로 이 의견을 삭제합니다. 계속하시겠습니까?")) return;
+    try {
+      await deleteDoc(doc(db, "topics", topicId, "comments", commentId));
+    } catch (e) {
+      alert("삭제 실패: " + e.message);
+    }
+    return;
+  }
+
+  // 작성자 모드 — 비밀번호 모달
+  pendingDeleteId = commentId;
+  $("#delete-pw-input").value = "";
+  $("#delete-err").classList.add("hidden");
+  $("#delete-modal").classList.remove("hidden");
+  setTimeout(() => $("#delete-pw-input").focus(), 100);
+}
+
+async function confirmDelete() {
+  if (!pendingDeleteId) return;
+  const pw = $("#delete-pw-input").value;
+  if (!pw) {
+    showDeleteErr("비밀번호를 입력해주세요.");
+    return;
+  }
+  const c = allComments.find(x => x.id === pendingDeleteId);
+  if (!c || !c.passwordHash) {
+    showDeleteErr("삭제 가능한 의견이 아닙니다.");
+    return;
+  }
+  const inputHash = await sha256(pw);
+  if (inputHash !== c.passwordHash) {
+    showDeleteErr("비밀번호가 일치하지 않습니다.");
+    return;
+  }
+  $("#delete-confirm").disabled = true;
+  try {
+    await deleteDoc(doc(db, "topics", topicId, "comments", pendingDeleteId));
+    closeDeleteModal();
+  } catch (e) {
+    showDeleteErr("삭제 실패: " + e.message);
+  } finally {
+    $("#delete-confirm").disabled = false;
+  }
+}
+
+function showDeleteErr(msg) {
+  $("#delete-err-msg").innerHTML = `<b>삭제할 수 없습니다</b>${esc(msg)}`;
+  $("#delete-err").classList.remove("hidden");
+}
+
+function closeDeleteModal() {
+  $("#delete-modal").classList.add("hidden");
+  pendingDeleteId = null;
 }
 
 function renderAnalytics() {
@@ -333,17 +419,24 @@ async function init() {
     }
   });
 
-  // Auth 상태 → 분석 패널 토글
+  // Auth 상태 → 분석 패널 + 댓글 리스트 재렌더(관리자 삭제 버튼)
   onAuthStateChanged(auth, (user) => {
     isAdmin = !!user;
     const panel = document.getElementById("analytics-panel");
     if (isAdmin) {
       panel.classList.remove("hidden");
-      // 이미 댓글이 로드된 상태라면 즉시 차트 그리기
       if (allComments.length) renderAnalytics();
     } else {
       panel.classList.add("hidden");
       destroyCharts();
+    }
+    // 댓글 리스트는 상태와 관계없이 버튼 표시 차이만 있으므로 항상 재렌더
+    if (allComments.length) {
+      const sortedDesc = [...allComments].sort((a,b) => (b.createdAt?.toMillis?.()||0) - (a.createdAt?.toMillis?.()||0));
+      const original = allComments;
+      allComments = sortedDesc;
+      renderCommentList();
+      allComments = original;
     }
   });
 
@@ -355,6 +448,12 @@ async function init() {
     c.parentElement.classList.toggle("field__counter--warn", len > 1400);
   });
   $("#submit-btn").addEventListener("click", submitComment);
+
+  // 삭제 모달
+  $("#delete-confirm").addEventListener("click", confirmDelete);
+  $("#delete-pw-input").addEventListener("keydown", (e) => { if (e.key === "Enter") confirmDelete(); });
+  document.querySelectorAll("[data-close-delete]").forEach(el => el.addEventListener("click", closeDeleteModal));
+
   $("#filter-dept").addEventListener("change", () => {
     // 필터링용: allComments는 asc 순. 표시 시점에 desc로 변환.
     const sortedDesc = [...allComments].sort((a,b) => (b.createdAt?.toMillis?.()||0) - (a.createdAt?.toMillis?.()||0));

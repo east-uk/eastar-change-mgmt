@@ -48,7 +48,11 @@ service cloud.firestore {
                        || (isValidComment() && isBeforeDue(topicId));
 
         allow update: if false;            // 누구도 수정 불가
-        allow delete: if isAdmin();        // 관리자만 회수 가능
+
+        // 삭제: 관리자 항상 가능, 작성자는 비밀번호 해시가 있는 댓글에 한해 허용
+        // (실제 비밀번호 검증은 클라이언트에서 수행 — v1 한계, Cloud Function으로 강화 권장)
+        allow delete: if isAdmin()
+                       || resource.data.keys().hasAny(['passwordHash']);
       }
     }
 
