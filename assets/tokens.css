@@ -1,0 +1,117 @@
+/* ─────────────────────────────────────────────────────────────
+   EastarJet Design System — tokens.css
+   Brand: EASTARJET (이스타항공) · Official 전용색상
+   Source: Claude Design bundle (https://api.anthropic.com/v1/design/h/qwaIRNPOUGZiClT1vjHRvw)
+   ───────────────────────────────────────────────────────────── */
+
+/* 폰트 파일을 assets/fonts/ 에 넣으면 자동 적용. 없으면 Noto Sans KR로 폴백. */
+@font-face {
+  font-family: "EastarJet";
+  src: url("fonts/EastarJet-DemiLight.otf") format("opentype"),
+       url("fonts/EastarJet-DemiLight.ttf") format("truetype");
+  font-weight: 300; font-display: swap;
+}
+@font-face {
+  font-family: "EastarJet";
+  src: url("fonts/EastarJet-Medium.otf") format("opentype"),
+       url("fonts/EastarJet-Medium.ttf") format("truetype");
+  font-weight: 500; font-display: swap;
+}
+@font-face {
+  font-family: "EastarJet";
+  src: url("fonts/EastarJet-Heavy.otf") format("opentype"),
+       url("fonts/EastarJet-Heavy.ttf") format("truetype");
+  font-weight: 800; font-display: swap;
+}
+
+:root {
+  /* ── MAIN ─────────────────────────────────────────── */
+  /* CRIMSON RED · PANTONE 200 C · R210 G0 B21 */
+  --ej-red:         #D20015;
+  --ej-red-deep:    #8E000E;  /* Dark Red · PANTONE 202 C · R142 G1 B20 */
+  --ej-red-dim:     #CAA6B5;  /* Dim Red  · PANTONE 435 C · R202 G170 B181 */
+  --ej-red-tint:    #F5E4E8;  /* derived wash (brand-consistent) */
+  --ej-red-wash:    #FCF4F6;
+
+  /* ── MATERIAL (metallic accents) ─────────────────── */
+  --ej-silver:      #A0A0A0;  /* PANTONE 877 C · R160 G160 B160 */
+  --ej-gold:        #B4975B;  /* PANTONE 874 C · R180 G151 B91  */
+
+  /* ── NEUTRALS (official Sub Color gray ramp) ─────── */
+  --ej-black:       #111111;  /* Black 95% · R17 G17 B17 */
+  --ej-gray-dark:   #30383C;  /* Dark Gray · PANTONE 431 C · R48 G58 B60 */
+  --ej-gray-med:    #565A5B;  /* Medium Gray · Cool Gray 9 C · R86 G90 B91 */
+  --ej-gray:        #9EA2A1;  /* Gray · PANTONE 429 C · R158 G162 B161 */
+  --ej-gray-light:  #C0CED1;  /* Light Gray · PANTONE 537 C · R192 G206 B209 */
+  --ej-line:        #E4E6E8;  /* derived hairline from ramp */
+  --ej-line-2:      #EFF1F2;
+  --ej-surface:     #F7F8F9;
+  --ej-paper:       #FFFFFF;
+
+  /* Semantic ink aliases (map to the official ramp) */
+  --ej-ink:         var(--ej-black);
+  --ej-ink-2:       var(--ej-gray-dark);
+  --ej-ink-3:       var(--ej-gray-med);
+  --ej-ink-4:       var(--ej-gray);
+
+  /* ── EXTENDED PALETTE ─────────────────────────────
+     For data visualization, illustrations, destination tags,
+     campaign accents. NEVER as a replacement for Crimson Red
+     in primary brand surfaces (logo, hero, CTA, header). */
+  --ej-navy:        #1B2A4E;
+  --ej-teal:        #2E7E80;
+  --ej-amber:       #E8A33D;
+  --ej-coral:       #F26A5A;
+  --ej-plum:        #5C2440;
+  --ej-sand:        #E8DDC4;
+
+  --ej-navy-tint:   #E6E9F0;
+  --ej-teal-tint:   #DCEDED;
+  --ej-amber-tint:  #FBEFD7;
+  --ej-coral-tint:  #FCE3DE;
+  --ej-plum-tint:   #EFE0E8;
+
+  /* ── SEMANTIC ───────────────────────────────────── */
+  --ej-danger:      var(--ej-red);
+  --ej-warning:     var(--ej-amber);
+  --ej-success:     var(--ej-teal);
+  --ej-info:        var(--ej-navy);
+
+  /* ── Type ─────────────────────────────────────────── */
+  --ej-font:        "EastarJet", "Noto Sans KR", "맑은 고딕", "Malgun Gothic",
+                     system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ej-font-num:    "EastarJet", "Helvetica Neue", Arial, sans-serif;
+
+  --fs-display: 88px;
+  --fs-h1: 56px;
+  --fs-h2: 40px;
+  --fs-h3: 28px;
+  --fs-title: 20px;
+  --fs-body: 14px;
+  --fs-caption: 12px;
+  --fs-eyebrow: 11px;
+
+  /* ── Spacing ─────────────────────────────────────── */
+  --sp-0: 0; --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 24px; --sp-6: 32px; --sp-7: 48px; --sp-8: 64px; --sp-9: 96px;
+
+  /* ── Radii ───────────────────────────────────────── */
+  --rad-0: 0; --rad-1: 2px; --rad-2: 6px; --rad-3: 10px; --rad-4: 16px; --rad-5: 24px; --rad-pill: 999px;
+
+  /* ── Elevation ───────────────────────────────────── */
+  --sh-1: 0 1px 2px rgba(17,17,17,.06), 0 1px 1px rgba(17,17,17,.04);
+  --sh-2: 0 4px 12px rgba(17,17,17,.08), 0 2px 4px rgba(17,17,17,.04);
+  --sh-3: 0 16px 40px rgba(17,17,17,.12), 0 4px 10px rgba(17,17,17,.06);
+  --sh-red: 0 10px 24px rgba(210,0,21,.28);
+
+  /* ── Motion ──────────────────────────────────────── */
+  --ease-out: cubic-bezier(.22,.61,.36,1);
+  --ease-in-out: cubic-bezier(.65,0,.35,1);
+  --dur-fast: 160ms; --dur-med: 240ms; --dur-slow: 420ms;
+
+  --ej-star: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 0 L13.4 10.6 L24 12 L13.4 13.4 L12 24 L10.6 13.4 L0 12 L10.6 10.6 Z' fill='%23D20015'/></svg>");
+}
+
+html, body { font-family: var(--ej-font); color: var(--ej-ink); background: var(--ej-paper); -webkit-font-smoothing: antialiased; }
+body { margin: 0; }
+*, *::before, *::after { box-sizing: border-box; }

@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>주제 상세 · 변화관리 의견 광장</title>
+<meta name="theme-color" content="#D20015">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap topbar__inner">
+    <a class="brand" href="./index.html">
+      <span class="brand__star" aria-hidden="true"></span>
+      <span>
+        <div class="brand__sub">EASTARJET</div>
+        <div class="brand__name">변화관리 의견 광장</div>
+      </span>
+    </a>
+    <nav class="topbar__nav">
+      <a href="./index.html">← 전체 주제</a>
+    </nav>
+  </div>
+</header>
+
+<section class="section--tight" style="background: linear-gradient(180deg, var(--ej-surface), var(--ej-paper));">
+  <div class="wrap" id="topic-header">
+    <div class="empty" id="topic-loading">
+      <div class="empty__title">불러오는 중…</div>
+    </div>
+  </div>
+</section>
+
+<main class="wrap" id="topic-main" style="display: none;">
+
+  <!-- 댓글 작성 -->
+  <section class="section--tight">
+    <h2 class="h-section">의견 남기기</h2>
+    <div id="compose-area" class="chart-card">
+      <div class="stack stack--loose">
+        <div class="field">
+          <label for="dept-select">본부 선택 <span style="color: var(--ej-red);">*</span></label>
+          <select id="dept-select" class="select" required>
+            <option value="">— 선택해주세요 —</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="comment-text">의견 (최대 1,500자)</label>
+          <textarea id="comment-text" class="textarea" maxlength="1500" placeholder="걱정·고민·궁금한 사항을 자유롭게 남겨주세요. 작성자는 식별되지 않습니다."></textarea>
+          <div class="field__counter"><span id="counter">0</span> / 1500</div>
+        </div>
+        <div class="row row--between">
+          <span class="text-small text-mute">의견은 익명으로 저장되며 본부 정보만 통계에 사용됩니다.</span>
+          <button id="submit-btn" class="btn btn--primary">의견 등록</button>
+        </div>
+        <div id="submit-msg" class="hidden"></div>
+      </div>
+    </div>
+    <div id="closed-notice" class="alert alert--notice hidden" style="margin-top: var(--sp-4);">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 8v.01M12 11v5"/></svg>
+      <div><b>의견 접수가 마감되었습니다</b>마감일이 지난 주제는 새로운 의견을 받을 수 없습니다. 모인 의견은 아래에서 확인할 수 있습니다.</div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- KPI -->
+  <section class="section--tight">
+    <h2 class="h-section">실시간 현황</h2>
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi__lbl">총 의견 수</div>
+        <div class="kpi__num" id="kpi-count">0</div>
+        <div class="kpi__sub">실시간 업데이트</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi__lbl">참여 본부</div>
+        <div class="kpi__num" id="kpi-depts">0</div>
+        <div class="kpi__sub">7개 본부 중</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi__lbl">평균 글자 수</div>
+        <div class="kpi__num" id="kpi-avg">0</div>
+        <div class="kpi__sub">의견 1건당</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Charts -->
+  <section class="section--tight">
+    <h2 class="h-section">분석</h2>
+    <div class="chart-grid">
+      <div class="chart-card">
+        <div class="chart-card__title">자주 등장한 키워드</div>
+        <canvas id="wordcloud" class="wc-canvas"></canvas>
+        <div id="wc-empty" class="empty hidden" style="margin-top: var(--sp-4);">
+          <div class="empty__title">의견이 모이면 표시됩니다</div>
+          <div>최소 3건 이상 등장한 키워드만 시각화됩니다.</div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card__title">상위 키워드</div>
+        <canvas id="bar-chart" class="chart-canvas"></canvas>
+      </div>
+    </div>
+    <div class="chart-grid" style="margin-top: var(--sp-5);">
+      <div class="chart-card">
+        <div class="chart-card__title">본부별 의견 분포</div>
+        <canvas id="donut-chart" class="chart-canvas"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card__title">시간대별 의견 추이</div>
+        <canvas id="line-chart" class="chart-canvas"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- 댓글 리스트 -->
+  <section class="section--tight">
+    <div class="row row--between" style="margin-bottom: var(--sp-4);">
+      <h2 class="h-section" style="margin: 0;">전체 의견</h2>
+      <div class="row">
+        <select id="filter-dept" class="select" style="height: 36px; padding: 0 36px 0 14px; font-size: 13px;">
+          <option value="">전체 본부</option>
+        </select>
+      </div>
+    </div>
+    <div id="comments-list" class="stack stack--tight"></div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer__inner">
+    <div>© EASTARJET 안전기획팀 · 변화관리 의견 광장</div>
+    <div class="row text-small">
+      <span class="dept" data-color="navy">완전 익명</span>
+      <span>본부 선택만 필수</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/wordcloud@1.2.2/src/wordcloud2.min.js"></script>
+<script type="module" src="js/topic.js"></script>
+</body>
+</html>

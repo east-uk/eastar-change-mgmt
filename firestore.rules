@@ -1,0 +1,56 @@
+rules_version = '2';
+
+// 변화관리 의견 광장 — 완전 익명 정책
+// v1 한정 정책 (운영 시작 후 강화 권장):
+//  - topics·config·comments 모두 read public
+//  - 댓글 create: content/department 필드 검증 + 1500자 제한 + 마감 전
+//  - 댓글 update 금지 / delete는 관리자 회수용으로 일단 허용
+//  - topics·config write는 v1 임시 허용 (관리자 페이지에서 직접 호출)
+// v2 강화 시: Cloud Function + Anonymous Auth + custom claim(admin:true)
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── 헬퍼 함수 ────────────────────────────────────
+    function isValidComment() {
+      return request.resource.data.keys().hasAll(['content', 'department', 'createdAt'])
+          && request.resource.data.content is string
+          && request.resource.data.content.size() > 0
+          && request.resource.data.content.size() <= 1500
+          && request.resource.data.department is string
+          && request.resource.data.department.size() > 0
+          && request.resource.data.department.size() <= 40;
+    }
+
+    function isBeforeDue(topicId) {
+      let topic = get(/databases/$(database)/documents/topics/$(topicId)).data;
+      return topic.status == 'active'
+          && (topic.dueAt == null || request.time < topic.dueAt);
+    }
+
+    // ── 주제 ─────────────────────────────────────────
+    match /topics/{topicId} {
+      allow read: if true;
+      allow create, update, delete: if true;  // v1 임시
+
+      // ── 댓글 (완전 익명) ──────────────────────────
+      match /comments/{commentId} {
+        allow read: if true;
+        allow create: if isValidComment() && isBeforeDue(topicId);
+        allow update: if false;
+        allow delete: if true;  // v1 임시 (관리자 회수용)
+      }
+    }
+
+    // ── 설정값 (departments, stopwords, admin, sheets) ─
+    match /config/{docId} {
+      allow read: if true;
+      allow write: if true;  // v1 임시
+    }
+
+    // ── 그 외 모두 차단 ──────────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>관리자 · 변화관리 의견 광장</title>
+<meta name="theme-color" content="#D20015">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap topbar__inner">
+    <a class="brand" href="./index.html">
+      <span class="brand__star" aria-hidden="true"></span>
+      <span>
+        <div class="brand__sub">EASTARJET · ADMIN</div>
+        <div class="brand__name">변화관리 의견 광장 관리자</div>
+      </span>
+    </a>
+    <nav class="topbar__nav">
+      <a href="./index.html">사용자 화면</a>
+      <a href="#" id="logout-link" class="hidden">로그아웃</a>
+    </nav>
+  </div>
+</header>
+
+<!-- 비밀번호 게이트 -->
+<section id="gate" class="section">
+  <div class="wrap" style="max-width: 480px;">
+    <div class="chart-card">
+      <div class="eyebrow" style="margin-bottom: var(--sp-3);">ADMIN ACCESS</div>
+      <h1 style="margin: 0 0 var(--sp-3); font-size: 32px; font-weight: 800; letter-spacing: -0.02em;">관리자 인증</h1>
+      <p class="text-mute text-small" style="margin: 0 0 var(--sp-5);">주제 관리·통계 조회·내보내기 기능에 접근하려면 비밀번호를 입력해주세요.</p>
+      <div class="stack">
+        <div class="field">
+          <label for="pw-input">관리자 비밀번호</label>
+          <input id="pw-input" class="input" type="password" autocomplete="off" placeholder="••••••••">
+        </div>
+        <div id="pw-err" class="alert alert--danger hidden">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m12 3 10 17H2z"/><path d="M12 10v4M12 17v.01"/></svg>
+          <div><b>비밀번호가 일치하지 않습니다</b>다시 시도해주세요.</div>
+        </div>
+        <button id="pw-submit" class="btn btn--primary btn--lg">인증하기</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 관리자 본문 -->
+<main id="admin-main" class="wrap section hidden">
+
+  <div class="row row--between" style="margin-bottom: var(--sp-3);">
+    <div>
+      <div class="eyebrow">DASHBOARD</div>
+      <h1 style="margin: 6px 0 0; font-size: 40px; font-weight: 800; letter-spacing: -0.02em;">주제 관리</h1>
+    </div>
+    <button id="new-topic-btn" class="btn btn--primary">+ 새 주제 등록</button>
+  </div>
+
+  <p class="text-mute text-small" style="margin: 0 0 var(--sp-6);">
+    주제를 등록하면 임직원이 익명으로 의견을 남길 수 있습니다. 마감일이 지나면 자동으로 의견 수집이 종료됩니다.
+  </p>
+
+  <!-- 운영 도구 -->
+  <div class="chart-card" style="margin-bottom: var(--sp-6);">
+    <div class="row row--between" style="flex-wrap: wrap; gap: var(--sp-3);">
+      <div>
+        <div class="kpi__lbl">운영 도구</div>
+        <div class="text-mute text-small" style="margin-top: 4px;">데이터 내보내기·동기화·QR 생성</div>
+      </div>
+      <div class="row">
+        <button id="export-all-btn" class="btn btn--secondary btn--sm">전체 CSV 내보내기</button>
+        <button id="sync-sheets-btn" class="btn btn--ghost btn--sm">Sheets 동기화</button>
+        <button id="qr-all-btn" class="btn btn--tertiary btn--sm">QR 일괄 생성</button>
+      </div>
+    </div>
+    <div id="ops-msg" class="hidden" style="margin-top: var(--sp-3);"></div>
+  </div>
+
+  <!-- 주제 리스트 -->
+  <h2 class="h-section">등록된 주제</h2>
+  <div id="admin-topics" class="stack stack--tight">
+    <div class="empty">불러오는 중…</div>
+  </div>
+</main>
+
+<!-- 주제 편집 모달 -->
+<div id="topic-modal" class="modal-bg hidden">
+  <div class="modal">
+    <div class="modal__head">
+      <h3 class="modal__title" id="modal-title">새 주제 등록</h3>
+      <button class="icon-btn" data-close>✕</button>
+    </div>
+    <div class="modal__body">
+      <div class="stack stack--loose">
+        <div class="row" style="gap: var(--sp-3);">
+          <div class="field" style="flex: 0 0 80px;">
+            <label for="topic-emoji">이모지</label>
+            <input id="topic-emoji" class="input" maxlength="4" value="✈️" style="text-align: center; font-size: 22px;">
+          </div>
+          <div class="field" style="flex: 1;">
+            <label for="topic-title">주제 제목</label>
+            <input id="topic-title" class="input" maxlength="80" placeholder="예) 8월 대구 신규취항 관련 의견 수집">
+          </div>
+        </div>
+        <div class="field">
+          <label for="topic-desc">설명 (마크다운 미지원, 줄바꿈 가능)</label>
+          <textarea id="topic-desc" class="textarea" maxlength="800" placeholder="임직원에게 보일 안내문을 작성해주세요."></textarea>
+        </div>
+        <div class="row" style="gap: var(--sp-3);">
+          <div class="field" style="flex: 1;">
+            <label for="topic-due">마감일</label>
+            <input id="topic-due" class="input" type="date">
+          </div>
+          <div class="field" style="flex: 1;">
+            <label for="topic-status">상태</label>
+            <select id="topic-status" class="select">
+              <option value="active">진행 중</option>
+              <option value="closed">종료</option>
+            </select>
+          </div>
+        </div>
+        <div id="modal-err" class="alert alert--danger hidden">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m12 3 10 17H2z"/><path d="M12 10v4M12 17v.01"/></svg>
+          <div id="modal-err-msg"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal__foot">
+      <button id="topic-delete" class="btn btn--tertiary hidden" style="color: var(--ej-red);">삭제</button>
+      <span class="spacer"></span>
+      <button class="btn btn--tertiary" data-close>취소</button>
+      <button id="topic-save" class="btn btn--primary">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- QR 모달 -->
+<div id="qr-modal" class="modal-bg hidden">
+  <div class="modal" style="max-width: 420px;">
+    <div class="modal__head">
+      <h3 class="modal__title">QR 코드</h3>
+      <button class="icon-btn" data-close>✕</button>
+    </div>
+    <div class="modal__body" style="text-align: center;">
+      <div id="qr-target" style="display: inline-block; padding: var(--sp-5); background: white; border-radius: var(--rad-3);"></div>
+      <div id="qr-url" class="mono text-small text-mute" style="margin-top: var(--sp-4); word-break: break-all;"></div>
+    </div>
+    <div class="modal__foot">
+      <button class="btn btn--tertiary" data-close>닫기</button>
+      <button id="qr-download" class="btn btn--primary">PNG 다운로드</button>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="wrap footer__inner">
+    <div>© EASTARJET 안전기획팀 · 변화관리 의견 광장 · 관리자 화면</div>
+    <div class="text-small text-mute">v1.0</div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script type="module" src="js/admin.js"></script>
+</body>
+</html>
