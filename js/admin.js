@@ -2,7 +2,7 @@
 import {
   db, auth, collection, doc, getDoc, getDocs, addDoc, setDoc, updateDoc, deleteDoc,
   query, orderBy, onSnapshot, serverTimestamp, Timestamp,
-  signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail
+  signInWithEmailAndPassword, signOut, onAuthStateChanged
 } from "./firebase-init.js";
 import {
   DEFAULT_DEPARTMENTS, ddayLabel, ddayBadgeClass, fmtDate, fmtDateTime,
@@ -73,20 +73,6 @@ async function handleLogin() {
   } finally {
     $("#login-btn").disabled = false;
     $("#login-btn").textContent = "로그인";
-  }
-}
-
-async function handleResetPassword() {
-  const email = normalizeEmail($("#email-input").value);
-  if (!email) {
-    showAuthError("비밀번호 재설정 메일을 받을 이메일을 먼저 입력해주세요.");
-    return;
-  }
-  try {
-    await sendPasswordResetEmail(auth, email);
-    showAuthError(`${email} 로 비밀번호 재설정 메일을 보냈습니다. 메일함을 확인해주세요.`, "success");
-  } catch (e) {
-    showAuthError(friendlyAuthError(e.code) || e.message);
   }
 }
 
@@ -409,7 +395,6 @@ async function triggerSheetsSync() {
 function bindUI() {
   // 로그인 폼
   $("#login-btn").addEventListener("click", handleLogin);
-  $("#reset-pw-btn").addEventListener("click", handleResetPassword);
   $("#email-input").addEventListener("keydown", (e) => { if (e.key === "Enter") $("#pw-input").focus(); });
   $("#pw-input").addEventListener("keydown", (e) => { if (e.key === "Enter") handleLogin(); });
   $("#logout-link").addEventListener("click", (e) => { e.preventDefault(); handleLogout(); });
