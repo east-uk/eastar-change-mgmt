@@ -78,9 +78,13 @@
   --ej-info:        var(--ej-navy);
 
   /* ── Type ─────────────────────────────────────────── */
-  --ej-font:        "EastarJet", "Noto Sans KR", "맑은 고딕", "Malgun Gothic",
-                     system-ui, -apple-system, "Segoe UI", sans-serif;
-  --ej-font-num:    "EastarJet", "Helvetica Neue", Arial, sans-serif;
+  /* QMS 포털 스택: Apple 시스템 폰트 우선 → Inter (UI) → Noto Sans KR (한글) */
+  --ej-font:        -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+                     "Apple SD Gothic Neo", "Inter", "Noto Sans KR",
+                     "맑은 고딕", "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  --ej-font-display: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Display",
+                     "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  --ej-font-num:    "Inter", -apple-system, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
 
   --fs-display: 88px;
   --fs-h1: 56px;

@@ -31,9 +31,11 @@
   background: var(--ej-star); background-size: contain; background-repeat: no-repeat;
 }
 .brand__name {
-  font-weight: 800; font-size: 15px; letter-spacing: 0.04em;
+  font-family: var(--ej-font-display);
+  font-weight: 700; font-size: 15px; letter-spacing: -0.01em;
 }
 .brand__sub {
+  font-family: var(--ej-font-display);
   font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
   color: var(--ej-red); font-weight: 800;
 }
@@ -66,8 +68,9 @@
   margin-bottom: var(--sp-4);
 }
 .hero__title {
+  font-family: var(--ej-font-display);
   font-size: clamp(40px, 7vw, var(--fs-display));
-  font-weight: 800; line-height: 0.95; letter-spacing: -0.025em;
+  font-weight: 800; line-height: 1.0; letter-spacing: -0.035em;
   margin: 0 0 var(--sp-5); color: var(--ej-ink);
 }
 .hero__title em {
@@ -83,7 +86,8 @@
   padding-top: var(--sp-6); border-top: 1px solid var(--ej-line);
 }
 .hero__stat-num {
-  font-size: 40px; font-weight: 800; line-height: 1;
+  font-family: var(--ej-font-num);
+  font-size: 40px; font-weight: 700; line-height: 1;
   letter-spacing: -0.02em; color: var(--ej-ink);
   font-variant-numeric: tabular-nums;
 }
@@ -128,8 +132,9 @@
 }
 .topic-card__emoji { font-size: 28px; line-height: 1; }
 .topic-card__title {
-  font-size: 20px; font-weight: 800; line-height: 1.3;
-  letter-spacing: -0.01em; margin: 0;
+  font-family: var(--ej-font-display);
+  font-size: 20px; font-weight: 700; line-height: 1.3;
+  letter-spacing: -0.02em; margin: 0;
 }
 .topic-card__desc {
   font-size: 13px; color: var(--ej-ink-3); line-height: 1.6;
@@ -267,7 +272,8 @@
   text-transform: uppercase; color: var(--ej-ink-3); font-weight: 800;
 }
 .kpi__num {
-  margin-top: var(--sp-2); font-size: 40px; font-weight: 800;
+  font-family: var(--ej-font-num);
+  margin-top: var(--sp-2); font-size: 40px; font-weight: 700;
   line-height: 1; letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums; color: var(--ej-ink);
 }
@@ -295,8 +301,9 @@
   text-transform: uppercase; color: var(--ej-red); font-weight: 800;
 }
 .h-section {
-  font-size: var(--fs-h3); font-weight: 800;
-  letter-spacing: -0.015em; margin: var(--sp-3) 0 var(--sp-5);
+  font-family: var(--ej-font-display);
+  font-size: var(--fs-h3); font-weight: 700;
+  letter-spacing: -0.02em; margin: var(--sp-3) 0 var(--sp-5);
 }
 .divider { height: 1px; background: var(--ej-line); margin: var(--sp-7) 0; border: none; }
 
