@@ -69,8 +69,8 @@
 }
 .hero__title {
   font-family: var(--ej-font-display);
-  font-size: clamp(40px, 7vw, var(--fs-display));
-  font-weight: 800; line-height: 1.0; letter-spacing: -0.035em;
+  font-size: clamp(28px, 4.5vw, 52px);
+  font-weight: 800; line-height: 1.15; letter-spacing: -0.03em;
   margin: 0 0 var(--sp-5); color: var(--ej-ink);
 }
 .hero__title em {
