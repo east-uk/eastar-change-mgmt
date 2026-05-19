@@ -15,11 +15,14 @@
 
 .wrap--narrow { max-width: 520px; }
 
-.section { padding: var(--sp-7) 0; }       /* 모바일: 48px */
-.section--tight { padding: var(--sp-5) 0; } /* 모바일: 24px */
+/* 수직 padding 만 설정 — longhand 사용 이유:
+   .wrap 과 같은 element 에 함께 쓰일 때(예: <main class="wrap section">)
+   shorthand 'padding: a 0' 가 .wrap 의 horizontal padding 을 0 으로 덮어쓰는 버그 회피 */
+.section        { padding-top: var(--sp-7); padding-bottom: var(--sp-7); }       /* 모바일: 48 */
+.section--tight { padding-top: var(--sp-5); padding-bottom: var(--sp-5); }       /* 모바일: 24 */
 @media (min-width: 768px) {
-  .section        { padding: var(--sp-9) 0; }  /* md+: 96px */
-  .section--tight { padding: var(--sp-7) 0; }  /* md+: 48px */
+  .section        { padding-top: var(--sp-9); padding-bottom: var(--sp-9); }     /* md+: 96 */
+  .section--tight { padding-top: var(--sp-7); padding-bottom: var(--sp-7); }     /* md+: 48 */
 }
 
 /* ── Topic 페이지 — 데스크톱 2단 레이아웃 (lg+) ───────────── */
