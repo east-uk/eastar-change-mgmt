@@ -98,6 +98,32 @@ export function esc(s) {
     .replaceAll('"',"&quot;").replaceAll("'","&#039;");
 }
 
+const FLAG_CODE_BY_EMOJI = {
+  "🇯🇵": "jp",
+  "🇹🇼": "tw",
+  "🇭🇰": "hk",
+  "🇲🇴": "mo",
+  "🇨🇳": "cn",
+  "🇲🇳": "mn",
+  "🇻🇳": "vn",
+  "🇹🇭": "th",
+  "🇵🇭": "ph",
+  "🇲🇾": "my",
+  "🇸🇬": "sg",
+  "🇰🇷": "kr",
+  "🇺🇸": "us",
+  "🇬🇺": "gu",
+  "🇲🇵": "mp"
+};
+
+export function emojiHTML(emoji, className = "") {
+  const value = emoji || "✈️";
+  const code = FLAG_CODE_BY_EMOJI[value];
+  if (!code) return esc(value);
+  const cls = className ? ` ${esc(className)}` : "";
+  return `<img class="flag-emoji${cls}" src="https://flagcdn.com/48x36/${code}.png" alt="${esc(value)}" loading="lazy">`;
+}
+
 // SHA-256 (Web Crypto)
 export async function sha256(text) {
   const enc = new TextEncoder().encode(text);

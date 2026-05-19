@@ -6,7 +6,7 @@ import {
 import {
   DEFAULT_DEPARTMENTS, deptColorOf, colorHexOf, DEPT_COLOR_HEX,
   ddayLabel, ddayBadgeClass, fmtDate, fmtDateTime, fmtRelative,
-  isExpired, esc, qs, deptChipHTML, dailyBrowserHash, toast, sha256
+  isExpired, esc, qs, deptChipHTML, emojiHTML, dailyBrowserHash, toast, sha256
 } from "./utils.js";
 import { countKeywords, topKeywords } from "./keywords.js";
 
@@ -117,7 +117,7 @@ function renderHeader(t) {
   $("#topic-header").innerHTML = `
     <div class="eyebrow">VOICE OF EASTARJET</div>
     <div class="row" style="gap: var(--sp-3); margin: var(--sp-3) 0 var(--sp-4);">
-      <span style="font-size: 40px; line-height: 1;">${esc(t.coverEmoji || "✈️")}</span>
+      <span class="topic-header__emoji">${emojiHTML(t.coverEmoji || "✈️", "flag-emoji--lg")}</span>
       <h1 style="margin: 0; font-size: clamp(28px, 4vw, 44px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.1;">${esc(t.title || "(제목 없음)")}</h1>
     </div>
     <p style="margin: 0 0 var(--sp-4); color: var(--ej-ink-3); line-height: 1.7; white-space: pre-wrap;">${esc(t.description || "")}</p>

@@ -3,7 +3,7 @@ import {
   db, collection, doc, getDoc, query, orderBy, onSnapshot
 } from "./firebase-init.js";
 import {
-  ddayLabel, ddayBadgeClass, fmtDate, esc, isExpired
+  ddayLabel, ddayBadgeClass, fmtDate, esc, isExpired, emojiHTML
 } from "./utils.js";
 
 const $ = (s) => document.querySelector(s);
@@ -27,7 +27,7 @@ function renderTopicCard(t, id) {
   return `
     <a class="topic-card ${closed ? "topic-card--closed" : ""}" href="topic.html?id=${encodeURIComponent(id)}">
       <div class="topic-card__head">
-        <div class="topic-card__emoji">${esc(t.coverEmoji || "✈️")}</div>
+        <div class="topic-card__emoji">${emojiHTML(t.coverEmoji || "✈️")}</div>
         ${dday}
       </div>
       <h3 class="topic-card__title">${esc(t.title || "(제목 없음)")}</h3>

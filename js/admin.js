@@ -7,7 +7,7 @@ import {
 } from "./firebase-init.js";
 import {
   DEFAULT_DEPARTMENTS, ddayLabel, ddayBadgeClass, fmtDate, fmtDateTime,
-  isExpired, esc, toast
+  isExpired, esc, emojiHTML, toast
 } from "./utils.js";
 import { countKeywords, topKeywords } from "./keywords.js";
 
@@ -203,7 +203,7 @@ function topicRowHTML(t, id) {
       <div class="row row--between" style="flex-wrap: wrap; gap: var(--sp-3);">
         <div style="flex: 1; min-width: 240px;">
           <div class="row" style="gap: var(--sp-2);">
-            <span style="font-size: 22px;">${esc(t.coverEmoji || "✈️")}</span>
+            <span class="admin-topic-emoji">${emojiHTML(t.coverEmoji || "✈️")}</span>
             <strong style="font-size: 16px;">${esc(t.title || "(제목 없음)")}</strong>
             ${dday}
           </div>
@@ -288,7 +288,7 @@ function closeModals() {
 function setTopicEmoji(emoji) {
   const value = emoji || "✈️";
   $("#topic-emoji").value = value;
-  $("#emoji-picker-current").textContent = value;
+  $("#emoji-picker-current").innerHTML = emojiHTML(value);
   renderEmojiOptions($("#emoji-search")?.value || "");
 }
 
@@ -317,7 +317,7 @@ function renderEmojiOptions(filter = "") {
   });
   $("#emoji-options").innerHTML = options.length
     ? options.map(([emoji, label]) => `
-        <button class="emoji-option" type="button" data-emoji="${esc(emoji)}" title="${esc(label)}" aria-label="${esc(label)}" aria-pressed="${emoji === selected ? "true" : "false"}">${esc(emoji)}</button>
+        <button class="emoji-option" type="button" data-emoji="${esc(emoji)}" title="${esc(label)}" aria-label="${esc(label)}" aria-pressed="${emoji === selected ? "true" : "false"}">${emojiHTML(emoji)}</button>
       `).join("")
     : `<div class="text-small text-mute" style="grid-column: 1 / -1; padding: var(--sp-3);">검색 결과가 없습니다.</div>`;
 
