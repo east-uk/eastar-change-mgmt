@@ -18,6 +18,7 @@ let departments = DEFAULT_DEPARTMENTS;
 let editingId = null;
 let currentQRTopicId = null;
 let topicsUnsub = null;
+let authUnsub = null;
 
 // ─────────────────────────────────────────────
 // 이메일 보완: 사번/아이디만 입력 시 @eastarjet.com 자동 추가
@@ -436,7 +437,7 @@ async function init() {
   bindUI();
 
   // 인증 상태 감지
-  onAuthStateChanged(auth, async (user) => {
+  authUnsub = onAuthStateChanged(auth, async (user) => {
     if (user) {
       // 로그인됨 → 설정 도큐먼트 초기화 + 화면 전환
       try {
@@ -449,5 +450,11 @@ async function init() {
     }
   });
 }
+
+// pagehide 는 unload + bfcache 진입 양쪽 모두에 호출
+window.addEventListener("pagehide", () => {
+  if (topicsUnsub) topicsUnsub();
+  if (authUnsub) authUnsub();
+});
 
 init();

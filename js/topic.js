@@ -468,10 +468,12 @@ async function init() {
   });
 }
 
-window.addEventListener("beforeunload", () => {
+// pagehide 는 unload + bfcache 진입 양쪽 모두에 호출 → Firestore 리스너·차트 정리에 적합
+window.addEventListener("pagehide", () => {
   if (unsubTopic) unsubTopic();
   if (unsubComments) unsubComments();
   if (unsubAuth) unsubAuth();
+  destroyCharts();
 });
 
 init();

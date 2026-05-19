@@ -110,7 +110,8 @@ async function init() {
   });
 }
 
-window.addEventListener("beforeunload", () => {
+// pagehide 는 unload + bfcache 진입 양쪽 모두에 호출
+window.addEventListener("pagehide", () => {
   if (unsubTopics) unsubTopics();
 });
 
