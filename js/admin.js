@@ -1,8 +1,9 @@
-// admin.html — 관리자 (Firebase Auth 이메일/비밀번호)
+// admin.html — 관리자 (Firebase Auth ID/PW)
 import {
   db, auth, collection, doc, getDoc, getDocs, addDoc, setDoc, updateDoc, deleteDoc,
   query, orderBy, onSnapshot, serverTimestamp, Timestamp,
-  signInWithEmailAndPassword, signOut, onAuthStateChanged
+  signInWithEmailAndPassword, signOut, onAuthStateChanged,
+  setPersistence, browserLocalPersistence, browserSessionPersistence
 } from "./firebase-init.js";
 import {
   DEFAULT_DEPARTMENTS, ddayLabel, ddayBadgeClass, fmtDate, fmtDateTime,
@@ -13,6 +14,8 @@ import { countKeywords, topKeywords } from "./keywords.js";
 const $ = (s) => document.querySelector(s);
 
 const EMAIL_DOMAIN = "@eastarjet.com";
+const AUTO_LOGIN_KEY = "eastarAdminAutoLogin";
+const LAST_ID_KEY = "eastarAdminLastId";
 
 let departments = DEFAULT_DEPARTMENTS;
 let editingId = null;
@@ -21,7 +24,7 @@ let topicsUnsub = null;
 let authUnsub = null;
 
 // ─────────────────────────────────────────────
-// 이메일 보완: 사번/아이디만 입력 시 @eastarjet.com 자동 추가
+// ID 보완: 사번/아이디만 입력 시 @eastarjet.com 자동 추가
 // ─────────────────────────────────────────────
 function normalizeEmail(input) {
   const v = (input || "").trim().toLowerCase();
@@ -57,16 +60,21 @@ async function ensureStopwordsConfig() {
 // 인증 흐름
 // ─────────────────────────────────────────────
 async function handleLogin() {
-  const email = normalizeEmail($("#email-input").value);
+  const adminId = $("#admin-id").value.trim();
+  const email = normalizeEmail(adminId);
   const pw = $("#pw-input").value;
-  if (!email || !pw) {
-    showAuthError("이메일과 비밀번호를 입력해주세요.");
+  const keepSignedIn = $("#auto-login").checked;
+  if (!adminId || !pw) {
+    showAuthError("ID와 PW를 입력해주세요.");
     return;
   }
   $("#login-btn").disabled = true;
   $("#login-btn").textContent = "로그인 중…";
   try {
+    await setPersistence(auth, keepSignedIn ? browserLocalPersistence : browserSessionPersistence);
     await signInWithEmailAndPassword(auth, email, pw);
+    localStorage.setItem(AUTO_LOGIN_KEY, keepSignedIn ? "1" : "0");
+    localStorage.setItem(LAST_ID_KEY, adminId.toLowerCase());
     // onAuthStateChanged 가 나머지 처리
   } catch (e) {
     const msg = friendlyAuthError(e.code) || e.message;
@@ -79,11 +87,11 @@ async function handleLogin() {
 
 function friendlyAuthError(code) {
   const map = {
-    "auth/invalid-email":       "이메일 형식이 올바르지 않습니다.",
+    "auth/invalid-email":       "ID 형식이 올바르지 않습니다.",
     "auth/user-disabled":       "이 계정은 비활성화되어 있습니다.",
     "auth/user-not-found":      "등록되지 않은 계정입니다. Firebase 콘솔에서 사용자를 추가하세요.",
     "auth/wrong-password":      "비밀번호가 일치하지 않습니다.",
-    "auth/invalid-credential":  "이메일 또는 비밀번호가 올바르지 않습니다.",
+    "auth/invalid-credential":  "ID 또는 PW가 올바르지 않습니다.",
     "auth/too-many-requests":   "로그인 시도가 너무 많습니다. 잠시 후 다시 시도해주세요.",
     "auth/network-request-failed": "네트워크 연결을 확인해주세요.",
   };
@@ -115,7 +123,7 @@ function setAuthed(user) {
     $("#admin-main").classList.remove("hidden");
     $("#logout-link").classList.remove("hidden");
     $("#current-user").classList.remove("hidden");
-    $("#current-user").textContent = user.email;
+    $("#current-user").textContent = user.email ? user.email.split("@")[0] : "";
     listenTopics();
   } else {
     $("#gate").classList.remove("hidden");
@@ -417,18 +425,15 @@ async function triggerSheetsSync() {
 // UI 바인딩
 // ─────────────────────────────────────────────
 function bindUI() {
+  $("#login-btn").addEventListener("click", handleLogin);
   // 로그인 폼
   $("#login-btn").addEventListener("click", handleLogin);
-  $("#email-input").addEventListener("keydown", (e) => { if (e.key === "Enter") $("#pw-input").focus(); });
+  $("#admin-id").addEventListener("keydown", (e) => { if (e.key === "Enter") $("#pw-input").focus(); });
   $("#pw-input").addEventListener("keydown", (e) => { if (e.key === "Enter") handleLogin(); });
   $("#logout-link").addEventListener("click", (e) => { e.preventDefault(); handleLogout(); });
 
-  // 이메일에 @ 들어가면 suffix 숨김
-  const emailInput = $("#email-input");
-  const suffix = $("#email-suffix");
-  emailInput.addEventListener("input", () => {
-    suffix.style.display = emailInput.value.includes("@") ? "none" : "";
-  });
+  $("#auto-login").checked = localStorage.getItem(AUTO_LOGIN_KEY) === "1";
+  $("#admin-id").value = localStorage.getItem(LAST_ID_KEY) || "";
 
   // 관리자 본문
   $("#new-topic-btn").addEventListener("click", () => openEditModal(null));

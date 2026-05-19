@@ -35,25 +35,25 @@
   </div>
 </header>
 
-<!-- 이메일/비밀번호 로그인 게이트 -->
+<!-- 관리자 로그인 게이트 -->
 <section id="gate" class="section">
   <div class="wrap wrap--narrow">
-    <div class="chart-card">
+    <div class="chart-card admin-login-card">
       <div class="eyebrow" style="margin-bottom: var(--sp-3);">ADMIN ACCESS</div>
       <h2 style="margin: 0 0 var(--sp-5); font-size: 32px; font-weight: 800; letter-spacing: -0.02em;">관리자 인증</h2>
       <div class="stack">
         <div class="field">
-          <label for="email-input">이메일</label>
-          <div style="position: relative;">
-            <input id="email-input" class="input" type="text" autocomplete="username"
-                   placeholder="" style="padding-right: 130px;">
-            <span id="email-suffix" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: var(--ej-ink-3); font-size: 14px; font-weight: 500; pointer-events: none;">@eastarjet.com</span>
-          </div>
+          <label for="admin-id">ID</label>
+          <input id="admin-id" class="input" type="text" autocomplete="username" placeholder="관리자 ID">
         </div>
         <div class="field">
-          <label for="pw-input">비밀번호</label>
+          <label for="pw-input">PW</label>
           <input id="pw-input" class="input" type="password" autocomplete="current-password" placeholder="">
         </div>
+        <label class="check-row" for="auto-login">
+          <input id="auto-login" type="checkbox">
+          <span>자동 로그인</span>
+        </label>
         <div id="auth-err" class="alert alert--danger hidden">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m12 3 10 17H2z"/><path d="M12 10v4M12 17v.01"/></svg>
           <div id="auth-err-msg"></div>

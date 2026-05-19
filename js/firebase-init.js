@@ -9,7 +9,8 @@ import {
   serverTimestamp, Timestamp, increment
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 import {
-  getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged
+  getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged,
+  setPersistence, browserLocalPersistence, browserSessionPersistence
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 
 // ▼ 여기를 실제 값으로 교체 ─────────────────────────
@@ -33,5 +34,6 @@ export {
   collection, doc, getDoc, getDocs, addDoc, setDoc,
   updateDoc, deleteDoc, query, where, orderBy, limit, onSnapshot,
   serverTimestamp, Timestamp, increment,
-  signInWithEmailAndPassword, signOut, onAuthStateChanged
+  signInWithEmailAndPassword, signOut, onAuthStateChanged,
+  setPersistence, browserLocalPersistence, browserSessionPersistence
 };

@@ -87,12 +87,13 @@
 }
 .topbar__inner {
   display: flex; align-items: center; justify-content: space-between;
-  height: 64px;
+  height: 64px; gap: var(--sp-4);
 }
 /* ── Brand lockup ───────────────────────────────────────────── */
 .brand {
   display: flex; align-items: center; gap: var(--sp-3);
   text-decoration: none; color: var(--ej-ink);
+  min-width: 0;
 }
 .brand__icon {
   width: 30px; height: 30px; flex: 0 0 30px;
@@ -123,10 +124,11 @@
   text-align-last: justify;
   text-justify: inter-character;
 }
-.topbar__nav { display: flex; gap: var(--sp-5); }
+.topbar__nav { display: flex; align-items: center; gap: var(--sp-5); flex: 0 0 auto; }
 .topbar__nav a {
   color: var(--ej-ink-3); font-size: 13px; font-weight: 500;
   text-decoration: none; transition: color var(--dur-fast) var(--ease-out);
+  white-space: nowrap;
 }
 .topbar__nav a:hover { color: var(--ej-red); }
 .topbar__nav a[aria-current="page"] { color: var(--ej-red); font-weight: 800; }
@@ -188,12 +190,14 @@
   color: var(--ej-ink-3); max-width: 720px;
   margin: 0 0 var(--sp-3);                          /* 모바일: 12 */
 }
+.hero__desc span { display: inline; }
 @media (min-width: 768px) {
   .hero__desc {
     font-size: clamp(15px, 1.5vw, 18px);
     line-height: 1.55;
     margin-bottom: var(--sp-5);
   }
+  .hero__desc span { display: block; }
 }
 
 .hero__stats {
@@ -224,34 +228,91 @@
 @media (min-width: 768px) { .home-main.section { padding-top: var(--sp-6); } }
 
 /* ── About page ───────────────────────────────────────────── */
-.about-page { max-width: 960px; }
+.about-page {
+  max-width: none;
+  padding-top: var(--sp-7);
+}
 .about-lead {
+  position: relative;
   padding-bottom: var(--sp-7);
   border-bottom: 1px solid var(--ej-line);
 }
 .about-lead h1 {
-  max-width: 780px;
+  max-width: 860px;
   margin: 0;
-  font: 800 clamp(30px, 4vw, 48px)/1.16 var(--ej-font-display);
+  font: 800 clamp(34px, 5.2vw, 68px)/1.08 var(--ej-font-display);
   letter-spacing: -0.03em;
   color: var(--ej-ink);
 }
 .about-lead p {
-  max-width: 760px;
+  max-width: 780px;
   margin: var(--sp-5) 0 0;
-  font-size: 17px;
+  font-size: clamp(16px, 1.7vw, 21px);
   line-height: 1.8;
   color: var(--ej-ink-3);
+}
+.about-kicker {
+  margin-bottom: var(--sp-4);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ej-red);
+  font-weight: 800;
+}
+.about-visual {
+  margin-top: var(--sp-7);
+  border: 1px solid var(--ej-line);
+  border-radius: var(--rad-4);
+  background: linear-gradient(135deg, white, var(--ej-surface));
+  overflow: hidden;
+}
+.about-visual__track {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(220px, 1fr));
+}
+.about-visual__step {
+  padding: var(--sp-6);
+  min-height: 180px;
+  border-right: 1px solid var(--ej-line);
+  transition: background var(--dur-med) var(--ease-out), transform var(--dur-med) var(--ease-out);
+}
+.about-visual__step:last-child { border-right: 0; }
+.about-visual__step:hover {
+  background: white;
+  transform: translateY(-2px);
+}
+.about-visual__num {
+  font: 800 12px/1 var(--ej-font-display);
+  letter-spacing: 0.14em;
+  color: var(--ej-red);
+}
+.about-visual__step strong {
+  display: block;
+  margin-top: var(--sp-5);
+  font: 800 24px/1.25 var(--ej-font-display);
+  letter-spacing: -0.02em;
+}
+.about-visual__step span {
+  display: block;
+  margin-top: var(--sp-3);
+  color: var(--ej-ink-3);
+  line-height: 1.65;
 }
 .about-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: var(--sp-6);
-  padding: var(--sp-7) 0;
+  gap: var(--sp-4);
+  padding: var(--sp-7) 0 var(--sp-6);
   border-bottom: 1px solid var(--ej-line);
 }
 @media (min-width: 820px) {
   .about-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+.about-grid > div {
+  padding: var(--sp-5);
+  border: 1px solid var(--ej-line);
+  border-radius: var(--rad-3);
+  background: var(--ej-paper);
 }
 .about-grid h2,
 .about-note h2 {
@@ -266,12 +327,38 @@
   font-size: 14px;
   line-height: 1.75;
 }
-.about-note { padding-top: var(--sp-7); }
+.about-note {
+  padding: var(--sp-6);
+  margin-top: var(--sp-6);
+  border-radius: var(--rad-3);
+  background: var(--ej-red-wash);
+}
 .about-note ul {
   margin: 0;
   padding-left: 1.2em;
   color: var(--ej-ink-2);
   line-height: 1.9;
+}
+
+/* ── Admin login polish ───────────────────────────────────── */
+.admin-login-card {
+  padding: var(--sp-7);
+  box-shadow: var(--sh-1);
+}
+.check-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  color: var(--ej-ink-3);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.check-row input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--ej-red);
 }
 
 /* ── Cards ────────────────────────────────────────────────── */
@@ -540,6 +627,30 @@
 /* ── Mobile topbar nav — 좁은 폰에서 일부 링크 숨김 (B-5) ─ */
 @media (max-width: 480px) {
   .topbar__nav .nav--hide-mobile { display: none; }
+}
+@media (max-width: 760px) {
+  .topbar__inner { gap: var(--sp-3); }
+  .brand { flex: 1 1 auto; }
+  .brand__name { max-width: 150px; }
+  .brand__sub { display: none; }
+  .topbar__nav { gap: var(--sp-3); }
+  .topbar__nav a { font-size: 12px; }
+  #current-user { display: none !important; }
+}
+@media (max-width: 420px) {
+  .brand__icon { width: 28px; height: 28px; flex-basis: 28px; }
+  .brand__name { max-width: 112px; font-size: 14px; }
+  .topbar__nav { gap: var(--sp-2); }
+}
+@media (max-width: 720px) {
+  .admin-login-card { padding: var(--sp-5); }
+  .about-visual__track { grid-template-columns: minmax(0, 1fr); }
+  .about-visual__step {
+    min-height: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--ej-line);
+  }
+  .about-visual__step:last-child { border-bottom: 0; }
 }
 
 /* ── Footer ──────────────────────────────────────────────── */
