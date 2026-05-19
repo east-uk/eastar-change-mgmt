@@ -10,10 +10,8 @@
    ───────────────────────────────────────────────────────────── */
 
 /* ── Layout primitives ─────────────────────────────────────── */
-/* 좌우 여백: 모바일 48 / md 48 — bare 텍스트(hero · 섹션 헤더)도 카드 안 form 과 같은 inset */
+/* 좌우 여백: 모든 폭에서 48px — bare 텍스트(hero · 섹션 헤더)도 form 카드 안과 같은 inset */
 .wrap { max-width: 1200px; margin: 0 auto; padding: 0 var(--sp-7); }
-/* sm phone 좁은 폭에서는 약간 줄여 콘텐츠 폭 확보 */
-@media (max-width: 380px) { .wrap { padding: 0 var(--sp-6); } }
 
 .wrap--narrow { max-width: 520px; }
 
