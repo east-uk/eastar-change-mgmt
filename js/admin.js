@@ -425,7 +425,7 @@ async function fetchAllCommentsOf(topicId) {
   return publicSnap.docs.map(d => {
     const pub = d.data();
     const priv = privateMap.get(d.id) || {};
-    return { id: d.id, ...pub, employeeId: priv.employeeId || "", ipHash: priv.ipHash || "" };
+    return { id: d.id, ...pub, employeeId: priv.employeeId || "" };
   });
 }
 

@@ -229,7 +229,6 @@
 
 /* ── About page ───────────────────────────────────────────── */
 .about-page {
-  max-width: none;
   padding-top: var(--sp-7);
 }
 .about-lead {
