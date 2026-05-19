@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firebaseinstallations.googleapis.com https://www.gstatic.com https://script.google.com https://script.googleusercontent.com;">
-<title>이스타항공 변화관리 의견 광장</title>
-<meta name="description" content="이스타항공 전 임직원이 익명으로 변화관리 주제에 의견을 남기는 사내 광장">
+<title>변화관리란 · 변화관리 의견 광장</title>
+<meta name="description" content="변화관리의 의미와 이스타항공 변화관리 의견 광장의 운영 목적">
 <meta name="theme-color" content="#D20015">
 <link rel="icon" type="image/png" sizes="128x128" href="favicon.png">
 <link rel="apple-touch-icon" href="favicon.png">
@@ -27,51 +27,45 @@
       </span>
     </a>
     <nav class="topbar__nav">
-      <a href="./index.html" aria-current="page">홈</a>
-      <a href="./about.html">변화관리란</a>
+      <a href="./index.html">홈</a>
+      <a href="./about.html" aria-current="page">변화관리란</a>
       <a href="./admin.html">관리자</a>
     </nav>
   </div>
 </header>
 
-<section class="hero">
-  <div class="wrap">
-    <h1 class="hero__title">모두가 함께하는 <em>변화관리</em>.<br>당신의 의견을 들려주세요.</h1>
-    <p class="hero__desc">
-      신규 취항·정책 개편·업무 프로세스 등 변화의 시작점에서 걱정·고민·궁금증을 익명으로 자유롭게 남겨주세요.
+<main class="wrap section about-page">
+  <section class="about-lead">
+    <h1>변화관리는 바뀌는 일을 안전하게 받아들이도록 준비하는 과정입니다.</h1>
+    <p>
+      신규 노선, 절차 변경, 시스템 도입, 조직 운영 방식의 변화는 현장 업무에 크고 작은 영향을 줍니다.
+      변화관리는 그 영향을 미리 확인하고, 구성원의 걱정과 아이디어를 반영해 실행 과정의 혼선을 줄이는 활동입니다.
     </p>
-    <div class="hero__stats">
-      <div>
-        <div class="hero__stat-num" id="stat-active">—</div>
-        <div class="hero__stat-lbl">진행 중 주제</div>
-      </div>
-      <div>
-        <div class="hero__stat-num" id="stat-comments">—</div>
-        <div class="hero__stat-lbl">총 누적 의견</div>
-      </div>
+  </section>
+
+  <section class="about-grid" aria-label="변화관리 핵심 설명">
+    <div>
+      <h2>왜 의견을 모으나요?</h2>
+      <p>현장에서 먼저 보이는 불편, 우려, 질문을 초기에 확인하면 더 안전하고 현실적인 실행 계획을 만들 수 있습니다.</p>
     </div>
-  </div>
-</section>
-
-<main class="wrap section home-main">
-  <div class="row row--between" style="margin-bottom: var(--sp-5);">
-    <h2 class="h-section" style="margin: 0;">진행 중인 주제</h2>
-    <span class="text-mute text-small" id="active-count"></span>
-  </div>
-  <div id="active-topics" class="card-grid">
-    <div class="empty" style="grid-column: 1 / -1;">
-      <div class="spinner" aria-hidden="true"></div>
-      <div class="empty__title">불러오는 중…</div>
+    <div>
+      <h2>무엇을 남기면 되나요?</h2>
+      <p>걱정되는 점, 예상되는 업무 영향, 필요한 지원, 궁금한 사항, 개선 아이디어를 자유롭게 남기면 됩니다.</p>
     </div>
-  </div>
+    <div>
+      <h2>어떻게 활용하나요?</h2>
+      <p>수집된 의견은 주제별로 검토해 변화관리 보완사항, 안내자료, 교육·지원 계획 수립에 참고합니다.</p>
+    </div>
+  </section>
 
-  <hr class="divider" id="closed">
-
-  <div class="row row--between" style="margin-bottom: var(--sp-5);">
-    <h2 class="h-section" style="margin: 0;">지난 주제</h2>
-    <span class="text-mute text-small" id="closed-count"></span>
-  </div>
-  <div id="closed-topics" class="card-grid"></div>
+  <section class="about-note">
+    <h2>의견 광장의 원칙</h2>
+    <ul>
+      <li>게시되는 의견에는 사번이 공개되지 않습니다.</li>
+      <li>사번은 안전 포상 대상자 선정 등 내부 확인이 필요한 경우에만 사용합니다.</li>
+      <li>비방, 욕설, 개인정보 노출 등 부적절한 내용은 관리자 판단에 따라 삭제될 수 있습니다.</li>
+    </ul>
+  </section>
 </main>
 
 <footer class="footer">
@@ -79,8 +73,5 @@
     <div>© EASTARJET 안전기획팀 · 변화관리 의견 광장</div>
   </div>
 </footer>
-
-<!-- Firebase v10 modular SDK -->
-<script type="module" src="js/home.js"></script>
 </body>
 </html>
