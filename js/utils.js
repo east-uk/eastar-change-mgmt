@@ -109,6 +109,7 @@ const FLAG_CODE_BY_EMOJI = {
   "🇹🇭": "th",
   "🇵🇭": "ph",
   "🇲🇾": "my",
+  "🇮🇩": "id",
   "🇸🇬": "sg",
   "🇰🇷": "kr",
   "🇺🇸": "us",
