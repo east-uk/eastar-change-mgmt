@@ -18,8 +18,8 @@
 /* 수직 padding 만 설정 — longhand 사용 이유:
    .wrap 과 같은 element 에 함께 쓰일 때(예: <main class="wrap section">)
    shorthand 'padding: a 0' 가 .wrap 의 horizontal padding 을 0 으로 덮어쓰는 버그 회피 */
-.section        { padding-top: var(--sp-7); padding-bottom: var(--sp-7); }       /* 모바일: 48 */
-.section--tight { padding-top: var(--sp-5); padding-bottom: var(--sp-5); }       /* 모바일: 24 */
+.section        { padding-top: var(--sp-5); padding-bottom: var(--sp-7); }       /* 모바일: 24/48 — 위는 hero 다음이라 짧게 */
+.section--tight { padding-top: var(--sp-4); padding-bottom: var(--sp-5); }       /* 모바일: 16/24 */
 @media (min-width: 768px) {
   .section        { padding-top: var(--sp-9); padding-bottom: var(--sp-9); }     /* md+: 96 */
   .section--tight { padding-top: var(--sp-7); padding-bottom: var(--sp-7); }     /* md+: 48 */
@@ -113,10 +113,12 @@
 }
 .topbar__nav a:hover { color: var(--ej-red); }
 
-/* ── Hero ─────────────────────────────────────────────────── */
+/* ── Hero (mobile-first compact) ──────────────────────────────
+   모바일에서는 카드가 첫 뷰포트에 같이 보이도록 hero 전체를 컴팩트하게.
+   md+ 에서 원래 large 사이즈로 복원. */
 .hero {
   position: relative;
-  padding: var(--sp-7) 0 var(--sp-6);  /* 모바일 컴팩트 */
+  padding: var(--sp-5) 0 var(--sp-4);   /* 모바일: 24 / 16 */
   background:
     radial-gradient(ellipse at top right, rgba(210,0,21,0.06), transparent 60%),
     radial-gradient(ellipse at bottom left, rgba(27,42,78,0.05), transparent 50%),
@@ -128,45 +130,72 @@
   overflow: hidden;
 }
 @media (min-width: 768px) { .hero { padding: var(--sp-9) 0 var(--sp-8); } }
+
 .hero__star {
-  position: absolute; top: var(--sp-6); right: var(--sp-6);
-  width: 120px; height: 120px; opacity: 0.08;
+  position: absolute; top: var(--sp-4); right: var(--sp-4);
+  width: 72px; height: 72px; opacity: 0.06;       /* 모바일: 작고 옅게 */
   background: var(--ej-star); background-size: contain; background-repeat: no-repeat;
   pointer-events: none;
 }
-@media (min-width: 768px) { .hero__star { width: 200px; height: 200px; } }
-.hero__eyebrow {
-  font-size: var(--fs-eyebrow); letter-spacing: 0.22em;
-  text-transform: uppercase; color: var(--ej-red); font-weight: 800;
-  margin-bottom: var(--sp-4);
+@media (min-width: 768px) {
+  .hero__star {
+    top: var(--sp-6); right: var(--sp-6);
+    width: 200px; height: 200px; opacity: 0.08;
+  }
 }
+
+.hero__eyebrow {
+  font-size: 10px; letter-spacing: 0.16em;          /* 모바일: 11→10, 자간 축소 */
+  text-transform: uppercase; color: var(--ej-red); font-weight: 800;
+  margin-bottom: var(--sp-2);                       /* 16 → 8 */
+}
+@media (min-width: 768px) {
+  .hero__eyebrow { font-size: var(--fs-eyebrow); letter-spacing: 0.22em; margin-bottom: var(--sp-4); }
+}
+
 .hero__title {
   font-family: var(--ej-font-display);
-  font-size: clamp(28px, 4.5vw, 52px);
-  font-weight: 800; line-height: 1.15; letter-spacing: -0.03em;
-  margin: 0 0 var(--sp-5); color: var(--ej-ink);
+  font-size: clamp(22px, 6.5vw, 32px);              /* 모바일: 22~32, 데스크톱은 아래 override */
+  font-weight: 800; line-height: 1.2; letter-spacing: -0.02em;
+  margin: 0 0 var(--sp-3); color: var(--ej-ink);    /* 24 → 12 */
 }
-.hero__title em {
-  font-style: normal; color: var(--ej-red);
+@media (min-width: 768px) {
+  .hero__title { font-size: clamp(36px, 4.5vw, 52px); line-height: 1.15; letter-spacing: -0.03em; margin-bottom: var(--sp-5); }
 }
+.hero__title em { font-style: normal; color: var(--ej-red); }
+
+/* 설명문은 모바일에서 숨김 (브랜드성 메시지보다 카드가 우선) */
 .hero__desc {
+  display: none;
   font-size: clamp(16px, 1.8vw, 20px);
   color: var(--ej-ink-3); line-height: 1.55; max-width: 720px;
   margin: 0 0 var(--sp-7);
 }
+@media (min-width: 768px) { .hero__desc { display: block; } }
+
 .hero__stats {
-  display: flex; flex-wrap: wrap; gap: var(--sp-7);
-  padding-top: var(--sp-6); border-top: 1px solid var(--ej-line);
+  display: flex; flex-wrap: wrap; gap: var(--sp-5);  /* 모바일: 48 → 24 */
+  padding-top: var(--sp-3);                          /* 32 → 12 */
+  border-top: 1px solid var(--ej-line);
 }
+@media (min-width: 768px) {
+  .hero__stats { gap: var(--sp-7); padding-top: var(--sp-6); }
+}
+
 .hero__stat-num {
   font-family: var(--ej-font-num);
-  font-size: 40px; font-weight: 700; line-height: 1;
+  font-size: 26px; font-weight: 700; line-height: 1;  /* 모바일: 40 → 26 */
   letter-spacing: -0.02em; color: var(--ej-ink);
   font-variant-numeric: tabular-nums;
 }
+@media (min-width: 768px) { .hero__stat-num { font-size: 40px; } }
+
 .hero__stat-lbl {
-  margin-top: var(--sp-2); font-size: var(--fs-caption);
+  margin-top: var(--sp-1); font-size: 11px;            /* 모바일: 8→4 마진, 12→11 폰트 */
   color: var(--ej-ink-3); font-weight: 500;
+}
+@media (min-width: 768px) {
+  .hero__stat-lbl { margin-top: var(--sp-2); font-size: var(--fs-caption); }
 }
 
 /* ── Cards ────────────────────────────────────────────────── */
