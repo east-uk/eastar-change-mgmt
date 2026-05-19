@@ -62,8 +62,9 @@ export function ddayLabel(dueAt) {
 export function ddayBadgeClass(dueAt) {
   const d = daysUntil(dueAt);
   if (d === null || d < 0) return "badge badge--gray";
-  if (d <= 5) return "badge badge--red";
-  return "badge badge--wash";
+  if (d <= 2) return "badge badge--red";      // 임박: 2일 이내
+  if (d <= 7) return "badge badge--wash";     // 진행: 1주 이내
+  return "badge badge--out";                  // 여유: 1주 초과 (outline)
 }
 
 // 날짜 포맷

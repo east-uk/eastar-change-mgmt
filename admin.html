@@ -33,7 +33,7 @@
 
 <!-- 이메일/비밀번호 로그인 게이트 -->
 <section id="gate" class="section">
-  <div class="wrap" style="max-width: 480px;">
+  <div class="wrap wrap--narrow">
     <div class="chart-card">
       <div class="eyebrow" style="margin-bottom: var(--sp-3);">ADMIN ACCESS</div>
       <h2 style="margin: 0 0 var(--sp-5); font-size: 32px; font-weight: 800; letter-spacing: -0.02em;">관리자 인증</h2>
@@ -93,7 +93,10 @@
   <!-- 주제 리스트 -->
   <h2 class="h-section">등록된 주제</h2>
   <div id="admin-topics" class="stack stack--tight">
-    <div class="empty">불러오는 중…</div>
+    <div class="empty">
+      <div class="spinner" aria-hidden="true"></div>
+      <div class="empty__title">불러오는 중…</div>
+    </div>
   </div>
 </main>
 

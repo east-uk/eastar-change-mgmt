@@ -32,6 +32,7 @@
 <section class="section--tight" style="background: linear-gradient(180deg, var(--ej-surface), var(--ej-paper));">
   <div class="wrap" id="topic-header">
     <div class="empty" id="topic-loading">
+      <div class="spinner" aria-hidden="true"></div>
       <div class="empty__title">불러오는 중…</div>
     </div>
   </div>
@@ -39,8 +40,10 @@
 
 <main class="wrap" id="topic-main" style="display: none;">
 
+  <div class="topic-layout">
+
   <!-- 댓글 작성 -->
-  <section class="section--tight">
+  <section class="section--tight topic-layout__compose">
     <h2 class="h-section">의견 남기기</h2>
     <div id="compose-area" class="chart-card">
       <div class="stack stack--loose">
@@ -85,9 +88,24 @@
     </div>
   </section>
 
+  <!-- 전체 의견 (lg+: 오른쪽 컬럼, 모바일: compose 아래) -->
+  <section class="section--tight topic-layout__list">
+    <div class="row row--between" style="margin-bottom: var(--sp-4);">
+      <h2 class="h-section" style="margin: 0;">전체 의견</h2>
+      <div class="row">
+        <select id="filter-dept" class="select" style="height: 36px; padding: 0 36px 0 14px; font-size: 13px;">
+          <option value="">전체 본부</option>
+        </select>
+      </div>
+    </div>
+    <div id="comments-list" class="stack stack--tight"></div>
+  </section>
+
+  </div><!-- /topic-layout -->
+
   <hr class="divider">
 
-  <!-- 분석 패널 (관리자 전용) -->
+  <!-- 분석 패널 (관리자 전용, 풀폭) -->
   <div id="analytics-panel" class="hidden">
     <div class="alert alert--notice" style="margin-bottom: var(--sp-5);">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 1 3 5v6c0 5.5 3.8 10.7 9 12 5.2-1.3 9-6.5 9-12V5l-9-4z"/></svg>
@@ -152,22 +170,7 @@
         </div>
       </div>
     </section>
-
-    <hr class="divider">
   </div>
-
-  <!-- 댓글 리스트 -->
-  <section class="section--tight">
-    <div class="row row--between" style="margin-bottom: var(--sp-4);">
-      <h2 class="h-section" style="margin: 0;">전체 의견</h2>
-      <div class="row">
-        <select id="filter-dept" class="select" style="height: 36px; padding: 0 36px 0 14px; font-size: 13px;">
-          <option value="">전체 본부</option>
-        </select>
-      </div>
-    </div>
-    <div id="comments-list" class="stack stack--tight"></div>
-  </section>
 </main>
 
 <!-- 의견 삭제 확인 모달 -->

@@ -27,6 +27,22 @@ let unsubAuth = null;
 let unsubPrivate = null;
 const commentsPrivateMap = new Map();  // commentId → { employeeId, ipHash } (admin only)
 
+// ── 차트 색상 토큰 추출 (tokens.css 변경 시 자동 반영) ─────
+const cssVar = (name, fallback) => {
+  if (typeof document === "undefined") return fallback;
+  const v = getComputedStyle(document.body).getPropertyValue(name).trim();
+  return v || fallback;
+};
+const CHART_COLORS = {
+  red:     cssVar("--ej-red",      "#D20015"),
+  redDeep: cssVar("--ej-red-deep", "#8E000E"),
+  navy:    cssVar("--ej-navy",     "#1B2A4E"),
+  ink:     cssVar("--ej-ink",      "#111111"),
+  ink3:    cssVar("--ej-ink-3",    "#565A5B"),
+  line:    cssVar("--ej-line",     "#EFF1F2")
+};
+const chartRedFill = `${CHART_COLORS.red}14`;  // 8% alpha (hex 14)
+
 if (!topicId) {
   document.getElementById("topic-loading").innerHTML = `
     <div class="empty__title">주제를 찾을 수 없습니다</div>
@@ -179,7 +195,7 @@ function renderCommentList() {
         <div class="row" style="gap: var(--sp-2);">
           ${deptChipHTML(c.department, departments)}
           ${empChip}
-          <span class="comment__time">${esc(fmtRelative(c.createdAt))}</span>
+          <span class="comment__time" title="${esc(fmtDateTime(c.createdAt))}">${esc(fmtRelative(c.createdAt))}</span>
         </div>
         ${delBtn}
       </div>
@@ -312,11 +328,11 @@ function renderWordcloud() {
       weightFactor: 1,
       fontFamily: getComputedStyle(document.body).getPropertyValue("--ej-font").trim() || "Noto Sans KR",
       color: (word, weight) => {
-        // 가중치별로 brand red 변형
-        if (weight > 50) return "#D20015";
-        if (weight > 30) return "#8E000E";
-        if (weight > 20) return "#1B2A4E";
-        return "#565A5B";
+        // 가중치별로 brand red 변형 (tokens.css 기반)
+        if (weight > 50) return CHART_COLORS.red;
+        if (weight > 30) return CHART_COLORS.redDeep;
+        if (weight > 20) return CHART_COLORS.navy;
+        return CHART_COLORS.ink3;
       },
       backgroundColor: "transparent",
       rotateRatio: 0.2,
@@ -336,7 +352,7 @@ function renderWordcloud() {
       datasets: [{
         label: "언급 빈도",
         data: top15.map(t => t[1]),
-        backgroundColor: "#D20015",
+        backgroundColor: CHART_COLORS.red,
         borderRadius: 4
       }]
     },
@@ -345,8 +361,8 @@ function renderWordcloud() {
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
-        x: { ticks: { precision: 0, color: "#565A5B", font: { size: 11 } }, grid: { color: "#EFF1F2" } },
-        y: { ticks: { color: "#111", font: { size: 12, weight: 600 } }, grid: { display: false } }
+        x: { ticks: { precision: 0, color: CHART_COLORS.ink3, font: { size: 11 } }, grid: { color: CHART_COLORS.line } },
+        y: { ticks: { color: CHART_COLORS.ink, font: { size: 12, weight: 600 } }, grid: { display: false } }
       }
     }
   });
@@ -372,7 +388,7 @@ function renderDeptDonut() {
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: {
-        legend: { position: "right", labels: { color: "#111", font: { size: 12 } } },
+        legend: { position: "right", labels: { color: CHART_COLORS.ink, font: { size: 12 } } },
         tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.parsed}건` } }
       },
       cutout: "60%"
@@ -399,17 +415,17 @@ function renderTimeLine() {
       datasets: [{
         label: "일별 의견 수",
         data: entries.map(e => e[1]),
-        borderColor: "#D20015",
-        backgroundColor: "rgba(210,0,21,0.08)",
-        fill: true, tension: 0.3, borderWidth: 2, pointRadius: 3, pointBackgroundColor: "#D20015"
+        borderColor: CHART_COLORS.red,
+        backgroundColor: chartRedFill,
+        fill: true, tension: 0.3, borderWidth: 2, pointRadius: 3, pointBackgroundColor: CHART_COLORS.red
       }]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
-        x: { ticks: { color: "#565A5B", font: { size: 11 } }, grid: { display: false } },
-        y: { ticks: { precision: 0, color: "#565A5B", font: { size: 11 } }, grid: { color: "#EFF1F2" }, beginAtZero: true }
+        x: { ticks: { color: CHART_COLORS.ink3, font: { size: 11 } }, grid: { display: false } },
+        y: { ticks: { precision: 0, color: CHART_COLORS.ink3, font: { size: 11 } }, grid: { color: CHART_COLORS.line }, beginAtZero: true }
       }
     }
   });

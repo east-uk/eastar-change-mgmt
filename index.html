@@ -26,7 +26,7 @@
     </a>
     <nav class="topbar__nav">
       <a href="./index.html">진행 중</a>
-      <a href="#closed">지난 주제</a>
+      <a href="#closed" class="nav--hide-mobile">지난 주제</a>
       <a href="./admin.html">관리자</a>
     </nav>
   </div>
@@ -60,9 +60,9 @@
     <span class="text-mute text-small" id="active-count"></span>
   </div>
   <div id="active-topics" class="card-grid">
-    <div class="empty">
+    <div class="empty" style="grid-column: 1 / -1;">
+      <div class="spinner" aria-hidden="true"></div>
       <div class="empty__title">불러오는 중…</div>
-      <div>잠시만 기다려 주세요.</div>
     </div>
   </div>
 

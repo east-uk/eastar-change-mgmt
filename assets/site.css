@@ -1,14 +1,50 @@
 /* ─────────────────────────────────────────────────────────────
    변화관리 의견 광장 — site.css
    Apple-tone layout on top of EastarJet tokens.css
+
+   Breakpoints (semantic 3-tier):
+     sm  480px — small phone tweaks
+     md  768px — tablet+: wrap padding 확장, card/kpi grid 2/3단
+     lg 1024px — topic 2단 + sticky 활성, chart grid 2단
+     (1040px 는 index card-grid 3단 전용)
    ───────────────────────────────────────────────────────────── */
 
 /* ── Layout primitives ─────────────────────────────────────── */
 .wrap { max-width: 1200px; margin: 0 auto; padding: 0 var(--sp-5); }
 @media (min-width: 768px) { .wrap { padding: 0 var(--sp-7); } }
+@media (max-width: 480px) { .wrap { padding: 0 var(--sp-4); } }
 
-.section { padding: var(--sp-9) 0; }
-.section--tight { padding: var(--sp-7) 0; }
+.wrap--narrow { max-width: 520px; }
+
+.section { padding: var(--sp-7) 0; }       /* 모바일: 48px */
+.section--tight { padding: var(--sp-5) 0; } /* 모바일: 24px */
+@media (min-width: 768px) {
+  .section        { padding: var(--sp-9) 0; }  /* md+: 96px */
+  .section--tight { padding: var(--sp-7) 0; }  /* md+: 48px */
+}
+
+/* ── Topic 페이지 — 데스크톱 2단 레이아웃 (lg+) ───────────── */
+.topic-layout { display: contents; }
+@media (min-width: 1024px) {
+  .topic-layout {
+    display: grid;
+    grid-template-columns: minmax(360px, 440px) 1fr;
+    gap: var(--sp-6);
+    align-items: start;
+  }
+  .topic-layout__compose { position: sticky; top: 88px; }  /* topbar 64 + 24 여백 */
+}
+
+/* ── Global focus-visible (키보드 접근성) ─────────────────── */
+:focus-visible {
+  outline: 2px solid var(--ej-red);
+  outline-offset: 2px;
+  border-radius: var(--rad-2);
+}
+.btn:focus-visible { outline-offset: 3px; }
+.input:focus-visible, .textarea:focus-visible, .select:focus-visible {
+  outline: none;  /* 인풋은 기존 box-shadow 포커스 사용 */
+}
 
 /* ── Top brand bar ────────────────────────────────────────── */
 .topbar {
@@ -49,7 +85,7 @@
 /* ── Hero ─────────────────────────────────────────────────── */
 .hero {
   position: relative;
-  padding: var(--sp-9) 0 var(--sp-8);
+  padding: var(--sp-7) 0 var(--sp-6);  /* 모바일 컴팩트 */
   background:
     radial-gradient(ellipse at top right, rgba(210,0,21,0.06), transparent 60%),
     radial-gradient(ellipse at bottom left, rgba(27,42,78,0.05), transparent 50%),
@@ -60,12 +96,14 @@
     var(--ej-paper);
   overflow: hidden;
 }
+@media (min-width: 768px) { .hero { padding: var(--sp-9) 0 var(--sp-8); } }
 .hero__star {
   position: absolute; top: var(--sp-6); right: var(--sp-6);
-  width: 200px; height: 200px; opacity: 0.08;
+  width: 120px; height: 120px; opacity: 0.08;
   background: var(--ej-star); background-size: contain; background-repeat: no-repeat;
   pointer-events: none;
 }
+@media (min-width: 768px) { .hero__star { width: 200px; height: 200px; } }
 .hero__eyebrow {
   font-size: var(--fs-eyebrow); letter-spacing: 0.22em;
   text-transform: uppercase; color: var(--ej-red); font-weight: 800;
@@ -102,10 +140,10 @@
 
 /* ── Cards ────────────────────────────────────────────────── */
 .card-grid {
-  display: grid; gap: var(--sp-5);
+  display: grid; gap: var(--sp-4);
   grid-template-columns: 1fr;
 }
-@media (min-width: 720px) { .card-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 768px)  { .card-grid { gap: var(--sp-5); grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 1040px) { .card-grid { grid-template-columns: repeat(3, 1fr); } }
 
 .topic-card {
@@ -127,7 +165,9 @@
 }
 .topic-card--closed {
   filter: grayscale(0.7); opacity: 0.75;
+  background: var(--ej-surface);
 }
+.topic-card--closed .topic-card__title { color: var(--ej-ink-3); }
 .topic-card--closed:hover {
   transform: none; box-shadow: var(--sh-1);
 }
@@ -144,6 +184,10 @@
   font-size: 13px; color: var(--ej-ink-3); line-height: 1.7;
   margin: 0; flex: 1;
   white-space: pre-wrap; word-break: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 .topic-card__meta {
   display: flex; align-items: center; gap: var(--sp-3);
@@ -273,7 +317,7 @@
   display: grid; gap: var(--sp-4);
   grid-template-columns: 1fr;
 }
-@media (min-width: 640px) { .kpi-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 768px) { .kpi-grid { grid-template-columns: repeat(3, 1fr); } }
 .kpi {
   background: var(--ej-paper);
   border: 1px solid var(--ej-line);
@@ -330,7 +374,28 @@
   font-size: var(--fs-h3); font-weight: 700;
   letter-spacing: -0.02em; margin: var(--sp-3) 0 var(--sp-5);
 }
-.divider { height: 1px; background: var(--ej-line); margin: var(--sp-7) 0; border: none; }
+.divider { height: 1px; background: var(--ej-line); margin: var(--sp-5) 0; border: none; }
+@media (min-width: 768px) { .divider { margin: var(--sp-7) 0; } }
+
+/* ── 의견 작성 영역 컴팩트화 (sticky 컬럼·모바일 양쪽 유리) ── */
+#compose-area .stack--loose { gap: var(--sp-4); }
+#compose-area .textarea    { min-height: 96px; }
+@media (max-width: 767px) {
+  #compose-area              { padding: var(--sp-4); }
+  #compose-area .input,
+  #compose-area .select      { height: 44px; }
+  #compose-area .textarea    { min-height: 84px; }
+}
+
+/* ── 초소형(sm) — 카드 내부 패딩 축소로 좌우 여백 균형 ──── */
+@media (max-width: 480px) {
+  .chart-card, .topic-card, .comment, .kpi { padding: var(--sp-4); }
+}
+
+/* ── Mobile topbar nav — 좁은 폰에서 일부 링크 숨김 (B-5) ─ */
+@media (max-width: 480px) {
+  .topbar__nav .nav--hide-mobile { display: none; }
+}
 
 /* ── Footer ──────────────────────────────────────────────── */
 .footer {
@@ -363,6 +428,20 @@
   border-radius: var(--rad-3);
 }
 .empty__title { font-size: 16px; font-weight: 800; color: var(--ej-ink-3); margin-bottom: var(--sp-2); }
+
+/* 로딩 스피너 — .empty 안에서 사용 */
+.spinner {
+  display: inline-block; width: 28px; height: 28px;
+  border: 2px solid var(--ej-line);
+  border-top-color: var(--ej-red);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: var(--sp-3);
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation-duration: 2.4s; }
+}
 
 /* ── Modal (admin) ────────────────────────────────────────── */
 .modal-bg {
@@ -410,10 +489,15 @@
 
 /* ── Chart container ──────────────────────────────────────── */
 .chart-grid {
-  display: grid; gap: var(--sp-5);
+  display: grid; gap: var(--sp-4);
   grid-template-columns: 1fr;
 }
-@media (min-width: 900px) { .chart-grid { grid-template-columns: 1.2fr 1fr; } }
+@media (min-width: 768px)  { .chart-grid { gap: var(--sp-5); } }
+@media (min-width: 1024px) { .chart-grid { grid-template-columns: 1.2fr 1fr; } }
+/* 모바일에서 차트 영역 높이 축소 — 인라인 height(320/280px) 를 override */
+@media (max-width: 767px) {
+  #analytics-panel .chart-canvas-wrap { height: 220px !important; }
+}
 .chart-card {
   background: var(--ej-paper);
   border: 1px solid var(--ej-line);
