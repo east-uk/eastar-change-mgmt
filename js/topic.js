@@ -26,7 +26,32 @@ let unsubTopic = null;
 let unsubComments = null;
 let unsubAuth = null;
 let unsubPrivate = null;
+let listSizeObserver = null;
 const commentsPrivateMap = new Map();  // commentId → { employeeId, ipHash } (admin only)
+
+// 오른쪽 의견 리스트 높이를 왼쪽 compose 높이와 동기화 (데스크톱 lg+ 만 적용)
+function syncListHeight() {
+  const compose = document.querySelector(".topic-layout__compose");
+  const list = document.querySelector(".topic-layout__list");
+  if (!compose || !list) return;
+  if (window.innerWidth < 1024) {
+    list.style.maxHeight = "";  // 모바일/태블릿 — CSS fallback 사용
+    return;
+  }
+  list.style.maxHeight = compose.offsetHeight + "px";
+}
+
+function initListHeightSync() {
+  if (listSizeObserver) return;  // 이미 초기화됨
+  const compose = document.querySelector(".topic-layout__compose");
+  if (!compose) return;
+  syncListHeight();
+  if (typeof ResizeObserver !== "undefined") {
+    listSizeObserver = new ResizeObserver(syncListHeight);
+    listSizeObserver.observe(compose);
+  }
+  window.addEventListener("resize", syncListHeight);
+}
 
 // ── 차트 색상 토큰 추출 (tokens.css 변경 시 자동 반영) ─────
 const cssVar = (name, fallback) => {
@@ -506,6 +531,7 @@ async function init() {
     document.getElementById("topic-loading").style.display = "none";
     document.getElementById("topic-main").style.display = "block";
     renderHeader(topicData);
+    initListHeightSync();
   });
 
   // 댓글 listen (최신순)
@@ -609,6 +635,7 @@ window.addEventListener("pagehide", () => {
   if (unsubComments) unsubComments();
   if (unsubAuth) unsubAuth();
   if (unsubPrivate) unsubPrivate();
+  if (listSizeObserver) listSizeObserver.disconnect();
   destroyCharts();
 });
 

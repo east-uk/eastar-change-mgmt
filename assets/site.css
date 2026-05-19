@@ -36,7 +36,8 @@
   }
   .topic-layout__compose { position: sticky; top: 88px; }  /* topbar 64 + 24 여백 */
 
-  /* 오른쪽 의견 리스트 — 뷰포트 높이 기준 max-height + 내부 스크롤 */
+  /* 오른쪽 의견 리스트 — JS 가 compose 컬럼 높이를 측정해 max-height 동기화
+     (JS 로딩 전 fallback 으로 viewport 기반 max-height 유지) */
   .topic-layout__list {
     position: sticky;
     top: 88px;
