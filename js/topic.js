@@ -8,7 +8,7 @@ import {
   ddayLabel, ddayBadgeClass, fmtDate, fmtDateTime, fmtRelative,
   isExpired, esc, qs, deptChipHTML, dailyBrowserHash, toast, sha256
 } from "./utils.js";
-import { countKeywords, topKeywords, toWordCloudList } from "./keywords.js";
+import { countKeywords, topKeywords } from "./keywords.js";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => document.querySelectorAll(s);
@@ -18,7 +18,8 @@ let topicData = null;
 let departments = DEFAULT_DEPARTMENTS;
 let stopwordsExtra = [];
 let allComments = [];
-let charts = { bar: null, donut: null, line: null };
+let chartsPublic = { donut: null };   // 모든 사용자에게 노출 (donut 만 Chart.js, 워드클라우드는 SVG)
+let chartsAdmin = { bar: null, line: null };
 let isAdmin = false;
 let pendingDeleteId = null;
 let unsubTopic = null;
@@ -278,21 +279,33 @@ function closeDeleteModal() {
   pendingDeleteId = null;
 }
 
-function renderAnalytics() {
-  renderKPI();
+// 공개 분석 — 모든 사용자에게 항상 노출 (자주 등장한 키워드 + 본부별 분포 + 총 건수)
+function renderPublicAnalytics() {
+  $("#public-count").textContent = `총: ${allComments.length.toLocaleString()}건`;
   renderWordcloud();
   renderDeptDonut();
+}
+
+// 관리자 전용 분석 — KPI(참여 본부, 평균 글자수) + 상위 키워드 + 시간대별 추이
+function renderAdminAnalytics() {
+  renderKPI();
+  renderBarChart();
   renderTimeLine();
 }
 
 function destroyCharts() {
-  for (const key of Object.keys(charts)) {
-    if (charts[key]) { charts[key].destroy(); charts[key] = null; }
+  for (const key of Object.keys(chartsPublic)) {
+    if (chartsPublic[key]) { chartsPublic[key].destroy(); chartsPublic[key] = null; }
+  }
+  destroyAdminCharts();
+}
+function destroyAdminCharts() {
+  for (const key of Object.keys(chartsAdmin)) {
+    if (chartsAdmin[key]) { chartsAdmin[key].destroy(); chartsAdmin[key] = null; }
   }
 }
 
 function renderKPI() {
-  $("#kpi-count").textContent = allComments.length.toLocaleString();
   const depts = new Set(allComments.map(c => c.department));
   $("#kpi-depts").textContent = depts.size;
   const avg = allComments.length
@@ -301,11 +314,12 @@ function renderKPI() {
   $("#kpi-avg").textContent = avg;
 }
 
+// ── 워드클라우드 (d3-cloud SVG) — 공개 ─────────────────────
 function renderWordcloud() {
   const counter = countKeywords(allComments, stopwordsExtra);
   const top = topKeywords(counter, { topN: 60, minCount: 3 });
-  const canvas = $("#wordcloud");
-  const wrap = canvas.parentElement;
+  const svgEl = $("#wordcloud");
+  const wrap = svgEl.parentElement;
 
   if (!top.length) {
     $("#wc-empty").classList.remove("hidden");
@@ -315,37 +329,81 @@ function renderWordcloud() {
   $("#wc-empty").classList.add("hidden");
   wrap.style.display = "block";
 
-  // 컨테이너의 고정 크기(width/height)를 캔버스 버퍼에 동기화 → 무한 확장 방지
-  canvas.width  = wrap.clientWidth;
-  canvas.height = wrap.clientHeight;
-  canvas.style.width  = "100%";
-  canvas.style.height = "100%";
-
-  if (typeof WordCloud !== "undefined") {
-    WordCloud(canvas, {
-      list: toWordCloudList(top),
-      gridSize: 8,
-      weightFactor: 1,
-      fontFamily: getComputedStyle(document.body).getPropertyValue("--ej-font").trim() || "Noto Sans KR",
-      color: (word, weight) => {
-        // 가중치별로 brand red 변형 (tokens.css 기반)
-        if (weight > 50) return CHART_COLORS.red;
-        if (weight > 30) return CHART_COLORS.redDeep;
-        if (weight > 20) return CHART_COLORS.navy;
-        return CHART_COLORS.ink3;
-      },
-      backgroundColor: "transparent",
-      rotateRatio: 0.2,
-      minSize: 12,
-      shrinkToFit: true
-    });
+  const width  = wrap.clientWidth  || 320;
+  const height = wrap.clientHeight || 320;
+  if (typeof d3 === "undefined" || !d3.layout || !d3.layout.cloud) {
+    console.warn("[wordcloud] d3-cloud not loaded");
+    return;
   }
 
-  // bar chart 상위 15
-  const top15 = top.slice(0, 15);
+  // 빈도 → 폰트 크기 (14~56px)
+  const freqs = top.map(t => t[1]);
+  const maxFreq = Math.max(...freqs);
+  const minFreq = Math.min(...freqs);
+  const sizeOf = (freq) => {
+    if (maxFreq === minFreq) return 28;
+    return 14 + (freq - minFreq) / (maxFreq - minFreq) * 42;
+  };
+  const fontFamily = getComputedStyle(document.body).getPropertyValue("--ej-font").trim() || "Noto Sans KR";
+  const words = top.map(([text, freq]) => ({ text, freq, size: sizeOf(freq) }));
+
+  d3.layout.cloud()
+    .size([width, height])
+    .words(words)
+    .padding(3)
+    .rotate(() => (Math.random() < 0.25 ? 90 : 0))
+    .font(fontFamily)
+    .fontSize(d => d.size)
+    .spiral("archimedean")
+    .on("end", drawCloud)
+    .start();
+
+  function drawCloud(placed) {
+    // 기존 SVG 자식 제거
+    while (svgEl.firstChild) svgEl.removeChild(svgEl.firstChild);
+    svgEl.setAttribute("width", width);
+    svgEl.setAttribute("height", height);
+    svgEl.setAttribute("viewBox", `0 0 ${width} ${height}`);
+
+    const NS = "http://www.w3.org/2000/svg";
+    const g = document.createElementNS(NS, "g");
+    g.setAttribute("transform", `translate(${width/2},${height/2})`);
+
+    for (const w of placed) {
+      const fill =
+        w.freq >  maxFreq * 0.7 ? CHART_COLORS.red :
+        w.freq >  maxFreq * 0.5 ? CHART_COLORS.redDeep :
+        w.freq >  maxFreq * 0.3 ? CHART_COLORS.navy :
+                                   CHART_COLORS.ink3;
+      const weight = w.freq > maxFreq * 0.5 ? 700 : 500;
+
+      const text = document.createElementNS(NS, "text");
+      text.setAttribute("text-anchor", "middle");
+      text.setAttribute("transform", `translate(${w.x},${w.y}) rotate(${w.rotate})`);
+      text.setAttribute("font-size", w.size);
+      text.setAttribute("font-family", w.font);
+      text.setAttribute("font-weight", weight);
+      text.setAttribute("fill", fill);
+      text.style.cursor = "default";
+      text.textContent = w.text;
+
+      const titleEl = document.createElementNS(NS, "title");
+      titleEl.textContent = `${w.text} — ${w.freq}회`;
+      text.appendChild(titleEl);
+
+      g.appendChild(text);
+    }
+    svgEl.appendChild(g);
+  }
+}
+
+// ── 상위 키워드 bar chart — 관리자 ─────────────────────────
+function renderBarChart() {
+  const counter = countKeywords(allComments, stopwordsExtra);
+  const top15 = topKeywords(counter, { topN: 15, minCount: 1 });
   const barCtx = $("#bar-chart").getContext("2d");
-  if (charts.bar) charts.bar.destroy();
-  charts.bar = new Chart(barCtx, {
+  if (chartsAdmin.bar) chartsAdmin.bar.destroy();
+  chartsAdmin.bar = new Chart(barCtx, {
     type: "bar",
     data: {
       labels: top15.map(t => t[0]),
@@ -378,8 +436,8 @@ function renderDeptDonut() {
   const colors = labels.map(l => colorHexOf(l, departments));
 
   const ctx = $("#donut-chart").getContext("2d");
-  if (charts.donut) charts.donut.destroy();
-  charts.donut = new Chart(ctx, {
+  if (chartsPublic.donut) chartsPublic.donut.destroy();
+  chartsPublic.donut = new Chart(ctx, {
     type: "doughnut",
     data: {
       labels,
@@ -407,8 +465,8 @@ function renderTimeLine() {
   }
   const entries = [...byDay.entries()]; // 순서: insertion = createdAt asc
   const ctx = $("#line-chart").getContext("2d");
-  if (charts.line) charts.line.destroy();
-  charts.line = new Chart(ctx, {
+  if (chartsAdmin.line) chartsAdmin.line.destroy();
+  chartsAdmin.line = new Chart(ctx, {
     type: "line",
     data: {
       labels: entries.map(e => e[0]),
@@ -469,9 +527,11 @@ async function init() {
     renderCommentList();
     allComments = original;
 
-    // 분석은 관리자만 — 패널이 보일 때만 갱신
+    // 공개 분석은 항상 갱신 (총 건수·워드클라우드·본부 도넛)
+    renderPublicAnalytics();
+    // 관리자 차트는 admin 일 때만 추가 갱신
     if (isAdmin) {
-      renderAnalytics();
+      renderAdminAnalytics();
     }
   });
 
@@ -481,7 +541,7 @@ async function init() {
     const panel = document.getElementById("analytics-panel");
     if (isAdmin) {
       panel.classList.remove("hidden");
-      if (allComments.length) renderAnalytics();
+      if (allComments.length) renderAdminAnalytics();
       // 관리자 진입 시 commentsPrivate(사번·ipHash) 구독 시작 — Rules 가 admin only read
       if (!unsubPrivate) {
         unsubPrivate = onSnapshot(
@@ -503,7 +563,8 @@ async function init() {
       }
     } else {
       panel.classList.add("hidden");
-      destroyCharts();
+      // 관리자 전용 차트만 해제 (공개 wordcloud/donut 유지)
+      destroyAdminCharts();
       // 관리자 로그아웃 시 사번 listener 해제 + 메모리 비움
       if (unsubPrivate) { unsubPrivate(); unsubPrivate = null; }
       commentsPrivateMap.clear();
